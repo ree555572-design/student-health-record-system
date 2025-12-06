@@ -1,0 +1,1127 @@
+{% extends "base.html" %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/add_student.css') }}"
+/>
+<style>
+  .management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-action {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+
+  .btn-action:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-action.secondary {
+    background-color: #28a745;
+  }
+
+  .btn-action.secondary:hover {
+    background-color: #218838;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal.show {
+    display: block;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    animation: slideIn 0.3s;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+  }
+
+  .close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .close:hover {
+    color: black;
+  }
+
+  .form-card {
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .form-card input,
+  .form-card textarea {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  .form-card input:focus,
+  .form-card textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .section-title {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  table th,
+  table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+
+  table tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .btn-edit {
+    background-color: #ffc107;
+  }
+
+  .btn-edit:hover {
+    background-color: #e0a800;
+  }
+
+  .btn-delete {
+    background-color: #dc3545;
+  }
+
+  .btn-delete:hover {
+    background-color: #c82333;
+  }
+
+  .btn-view {
+    background-color: #17a2b8;
+  }
+
+  .btn-view:hover {
+    background-color: #138496;
+  }
+
+  /* Delete Confirmation Modal */
+  .delete-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s;
+  }
+
+  .delete-modal.show {
+    display: block;
+  }
+
+  .delete-modal-content {
+    background-color: #fefefe;
+    margin: 20% auto;
+    padding: 30px;
+    border: 1px solid #dc3545;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    animation: slideIn 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .delete-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .delete-modal-header i {
+    font-size: 28px;
+    color: #dc3545;
+  }
+
+  .delete-modal-header h3 {
+    margin: 0;
+    color: #dc3545;
+    font-size: 18px;
+  }
+
+  .delete-modal-body {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .delete-modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .delete-modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+
+  .delete-confirm-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .delete-confirm-btn:hover {
+    background-color: #c82333;
+  }
+
+  .delete-cancel-btn {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+  .delete-cancel-btn:hover {
+    background-color: #d0d0d0;
+  }
+
+  /* Search Bar Styling */
+  .search-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .search-input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 300px;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  .search-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .no-results {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin-top: 10px;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="management-header">
+  <h1>User Management</h1>
+  <div class="button-group">
+    <button class="btn-action" onclick="openStudentModal()">
+      + Add Student
+    </button>
+    <button class="btn-action secondary" onclick="openTeacherModal()">
+      + Add Teacher
+    </button>
+  </div>
+</div>
+
+<!-- Add Student Modal -->
+<div id="studentModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Add New Student</h2>
+      <button class="close" onclick="closeStudentModal()">&times;</button>
+    </div>
+    <form action="{{ url_for('add_student') }}" method="POST" class="form-card">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="text" name="studentLRN" placeholder="Student LRN" required />
+      <input type="text" name="name" placeholder="Full Name" required />
+      <input type="text" name="class" placeholder="Class/Grade" required />
+      <input type="date" name="dob" required />
+      <input type="text" name="address" placeholder="Address" />
+      <input
+        type="text"
+        name="parentContact"
+        placeholder="Parent/Guardian's Name"
+      />
+      <input
+        type="text"
+        name="emergencyContact"
+        placeholder="Emergency Contact"
+      />
+      <input type="text" name="height" placeholder="Height" />
+      <input type="text" name="weight" placeholder="Weight" />
+      <input type="text" name="blood" placeholder="Blood Type" />
+      <input type="text" name="pastIllnesses" placeholder="Past Illnesses" />
+      <input type="text" name="allergies" placeholder="Allergies" />
+      <input
+        type="text"
+        name="conditions"
+        placeholder="Pre-existing Conditions"
+      />
+      <input type="text" name="vaccination" placeholder="Vaccination Status" />
+      <button type="submit" class="btn-primary">Save Student</button>
+    </form>
+  </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div id="teacherModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Add New Teacher</h2>
+      <button class="close" onclick="closeTeacherModal()">&times;</button>
+    </div>
+    <form action="{{ url_for('add_teacher') }}" method="POST" class="form-card">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <input type="text" name="teacherID" placeholder="Teacher ID" required />
+      <input type="text" name="name" placeholder="Full Name" required />
+      <input
+        type="text"
+        name="department"
+        placeholder="Department / Subject"
+        required
+      />
+      <input type="date" name="dob" required />
+      <input type="text" name="address" placeholder="Address" />
+      <input type="text" name="contact" placeholder="Contact Number" />
+      <input type="text" name="height" placeholder="Height" />
+      <input type="text" name="weight" placeholder="Weight" />
+      <input type="text" name="blood" placeholder="Blood Type" />
+      <input type="text" name="pastIllnesses" placeholder="Past Illnesses" />
+      <input type="text" name="allergies" placeholder="Allergies" />
+      <input
+        type="text"
+        name="conditions"
+        placeholder="Pre-existing Conditions"
+      />
+      <input type="text" name="vaccination" placeholder="Vaccination Status" />
+      <button type="submit" class="btn-primary">Save Teacher</button>
+    </form>
+  </div>
+</div>
+
+<!-- Students Section -->
+<div class="section-title">Students</div>
+<div class="search-container">
+  <label class="search-label" for="studentSearchInput">Search by LRN:</label>
+  <input
+    type="text"
+    id="studentSearchInput"
+    class="search-input"
+    placeholder="Enter student LRN..."
+    onkeyup="filterStudentTable()"
+  />
+</div>
+<div class="table-wrapper">
+  <table id="studentTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>LRN</th>
+        <th>Name</th>
+        <th>Class</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td>{{ student.id }}</td>
+        <td>{{ student.studentLRN }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.class }}</td>
+        <td>
+          <div class="action-buttons">
+            <button
+              type="button"
+              class="btn-action btn-sm btn-edit"
+              onclick="openEditStudentModal({{ student.id }}, '{{ student.studentLRN }}', '{{ student.name }}', '{{ student.class }}', '{{ student.dob or '' }}', '{{ student.address or '' }}', '{{ student.parentContact or '' }}', '{{ student.emergencyContact or '' }}', '{{ student.height or '' }}', '{{ student.weight or '' }}', '{{ student.blood or '' }}', '{{ student.pastIllnesses or '' }}', '{{ student.allergies or '' }}', '{{ student.conditions or '' }}', '{{ student.vaccination or '' }}')"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              class="btn-action btn-sm btn-delete"
+              onclick="openDeleteModal('student', {{ student.id }}, '{{ student.name }}')"
+            >
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Teachers Section -->
+<div class="section-title">Teachers</div>
+<div class="search-container">
+  <label class="search-label" for="teacherSearchInput"
+    >Search by Teacher Code:</label
+  >
+  <input
+    type="text"
+    id="teacherSearchInput"
+    class="search-input"
+    placeholder="Enter teacher code..."
+    onkeyup="filterTeacherTable()"
+  />
+</div>
+<div class="table-wrapper">
+  <table id="teacherTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Teacher Code</th>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for teacher in teachers %}
+      <tr>
+        <td>{{ teacher.id }}</td>
+        <td>{{ teacher.teacherID }}</td>
+        <td>{{ teacher.name }}</td>
+        <td>{{ teacher.department }}</td>
+        <td>
+          <div class="action-buttons">
+            <button
+              type="button"
+              class="btn-action btn-sm btn-edit"
+              onclick="openEditTeacherModal({{ teacher.id }}, '{{ teacher.teacherID }}', '{{ teacher.name }}', '{{ teacher.department }}', '{{ teacher.dob or '' }}', '{{ teacher.address or '' }}', '{{ teacher.contact or '' }}', '{{ teacher.height or '' }}', '{{ teacher.weight or '' }}', '{{ teacher.blood or '' }}', '{{ teacher.pastIllnesses or '' }}', '{{ teacher.allergies or '' }}', '{{ teacher.conditions or '' }}', '{{ teacher.vaccination or '' }}')"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              class="btn-action btn-sm btn-delete"
+              onclick="openDeleteModal('teacher', {{ teacher.id }}, '{{ teacher.name }}')"
+            >
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<br />
+<a href="{{ url_for('dashboard') }}" class="btn-action">← Back to Dashboard</a>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="delete-modal">
+  <div class="delete-modal-content">
+    <div class="delete-modal-header">
+      <i class="bx bxs-exclamation-circle"></i>
+      <h3>Confirm Delete</h3>
+    </div>
+    <div class="delete-modal-body">
+      <p>
+        Are you sure you want to delete <strong id="deleteModalName"></strong>?
+      </p>
+      <p style="color: #dc3545; font-size: 12px; margin-top: 10px">
+        ⚠️ This action cannot be undone.
+      </p>
+    </div>
+    <div class="delete-modal-buttons">
+      <button class="delete-cancel-btn" onclick="closeDeleteModal()">
+        Cancel
+      </button>
+      <button class="delete-confirm-btn" onclick="confirmDelete()">
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Student Modal Functions
+  function openStudentModal() {
+    document.getElementById("studentModal").classList.add("show");
+  }
+
+  function closeStudentModal() {
+    document.getElementById("studentModal").classList.remove("show");
+  }
+
+  // Teacher Modal Functions
+  function openTeacherModal() {
+    document.getElementById("teacherModal").classList.add("show");
+  }
+
+  function closeTeacherModal() {
+    document.getElementById("teacherModal").classList.remove("show");
+  }
+
+  // Close modal when clicking outside of it
+  window.onclick = function (event) {
+    const studentModal = document.getElementById("studentModal");
+    const teacherModal = document.getElementById("teacherModal");
+    if (event.target === studentModal) {
+      studentModal.classList.remove("show");
+    }
+    if (event.target === teacherModal) {
+      teacherModal.classList.remove("show");
+    }
+  };
+
+  // Search and Filter Functions
+  function filterStudentTable() {
+    const searchInput = document
+      .getElementById("studentSearchInput")
+      .value.toLowerCase();
+    const table = document.getElementById("studentTable");
+    const rows = table
+      .getElementsByTagName("tbody")[0]
+      .getElementsByTagName("tr");
+    let visibleCount = 0;
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].classList.contains("no-results-row")) continue;
+      const lrnCell = rows[i].getElementsByTagName("td")[1]; // LRN is in column 1
+      if (lrnCell) {
+        const lrnValue = lrnCell.textContent.toLowerCase();
+        if (lrnValue.includes(searchInput)) {
+          rows[i].style.display = "";
+          visibleCount++;
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+
+    // Show "No results" message if no matches
+    const tbody = table.getElementsByTagName("tbody")[0];
+    let noResultsMsg = tbody.querySelector(".no-results-row");
+    if (visibleCount === 0 && searchInput !== "") {
+      if (!noResultsMsg) {
+        const row = tbody.insertRow();
+        row.className = "no-results-row";
+        const cell = row.insertCell(0);
+        cell.colSpan = 5;
+        cell.innerHTML =
+          '<div class="no-results">No students found with this LRN</div>';
+      }
+    } else if (noResultsMsg) {
+      noResultsMsg.remove();
+    }
+  }
+
+  function filterTeacherTable() {
+    const searchInput = document
+      .getElementById("teacherSearchInput")
+      .value.toLowerCase();
+    const table = document.getElementById("teacherTable");
+    const rows = table
+      .getElementsByTagName("tbody")[0]
+      .getElementsByTagName("tr");
+    let visibleCount = 0;
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].classList.contains("no-results-row")) continue;
+      const teacherCodeCell = rows[i].getElementsByTagName("td")[1]; // Teacher Code is in column 1
+      if (teacherCodeCell) {
+        const teacherCodeValue = teacherCodeCell.textContent.toLowerCase();
+        if (teacherCodeValue.includes(searchInput)) {
+          rows[i].style.display = "";
+          visibleCount++;
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+
+    // Show "No results" message if no matches
+    const tbody = table.getElementsByTagName("tbody")[0];
+    let noResultsMsg = tbody.querySelector(".no-results-row");
+    if (visibleCount === 0 && searchInput !== "") {
+      if (!noResultsMsg) {
+        const row = tbody.insertRow();
+        row.className = "no-results-row";
+        const cell = row.insertCell(0);
+        cell.colSpan = 5;
+        cell.innerHTML =
+          '<div class="no-results">No teachers found with this code</div>';
+      }
+    } else if (noResultsMsg) {
+      noResultsMsg.remove();
+    }
+  }
+
+  // Delete Confirmation Modal Functions
+  let deleteData = { type: null, id: null };
+
+  function openDeleteModal(type, id, name) {
+    deleteData.type = type;
+    deleteData.id = id;
+    document.getElementById("deleteModalName").textContent = name;
+    document.getElementById("deleteModal").classList.add("show");
+  }
+
+  function closeDeleteModal() {
+    document.getElementById("deleteModal").classList.remove("show");
+  }
+
+  function confirmDelete() {
+    const type = deleteData.type;
+    const id = deleteData.id;
+    let url = "";
+
+    if (type === "student") {
+      url = `/delete_student/${id}`;
+    } else if (type === "teacher") {
+      url = `/delete_teacher/${id}`;
+    }
+
+    fetch(url, {
+      method: "POST",
+    })
+      .then((response) => {
+        if (response.ok) {
+          location.reload();
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+
+    closeDeleteModal();
+  }
+
+  // Close delete modal when clicking outside
+  window.onclick = function (event) {
+    const studentModal = document.getElementById("studentModal");
+    const teacherModal = document.getElementById("teacherModal");
+    const deleteModal = document.getElementById("deleteModal");
+    if (event.target === studentModal) {
+      studentModal.classList.remove("show");
+    }
+    if (event.target === teacherModal) {
+      teacherModal.classList.remove("show");
+    }
+    if (event.target === deleteModal) {
+      deleteModal.classList.remove("show");
+    }
+  };
+</script>
+
+<!-- Edit Student Modal -->
+<div id="editStudentModal" class="modal">
+  <div class="modal-content" style="max-width: 700px">
+    <div class="modal-header">
+      <h2>Edit Student</h2>
+      <button class="close" onclick="closeEditStudentModal()">&times;</button>
+    </div>
+    <form id="editStudentForm" style="display: grid; gap: 12px">
+      <input type="hidden" id="editStudentId" />
+      <input
+        type="text"
+        id="editStudentLRN"
+        placeholder="Student LRN"
+        required
+      />
+      <input
+        type="text"
+        id="editStudentName"
+        placeholder="Full Name"
+        required
+      />
+      <input
+        type="text"
+        id="editStudentClass"
+        placeholder="Class/Grade"
+        required
+      />
+      <input type="date" id="editStudentDOB" />
+      <input type="text" id="editStudentAddress" placeholder="Address" />
+      <input
+        type="text"
+        id="editStudentParentContact"
+        placeholder="Parent/Guardian's Name"
+      />
+      <input
+        type="text"
+        id="editStudentEmergencyContact"
+        placeholder="Emergency Contact"
+      />
+      <input type="text" id="editStudentHeight" placeholder="Height" />
+      <input type="text" id="editStudentWeight" placeholder="Weight" />
+      <input type="text" id="editStudentBlood" placeholder="Blood Type" />
+      <input
+        type="text"
+        id="editStudentPastIllnesses"
+        placeholder="Past Illnesses"
+      />
+      <input type="text" id="editStudentAllergies" placeholder="Allergies" />
+      <input
+        type="text"
+        id="editStudentConditions"
+        placeholder="Pre-existing Conditions"
+      />
+      <input
+        type="text"
+        id="editStudentVaccination"
+        placeholder="Vaccination Status"
+      />
+      <div style="display: flex; gap: 10px; margin-top: 15px">
+        <button type="submit" class="btn-primary" style="flex: 1">
+          Save Changes
+        </button>
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="closeEditStudentModal()"
+          style="flex: 1; background-color: #6c757d"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Teacher Modal -->
+<div id="editTeacherModal" class="modal">
+  <div class="modal-content" style="max-width: 700px">
+    <div class="modal-header">
+      <h2>Edit Teacher</h2>
+      <button class="close" onclick="closeEditTeacherModal()">&times;</button>
+    </div>
+    <form id="editTeacherForm" style="display: grid; gap: 12px">
+      <input type="hidden" id="editTeacherId" />
+      <input type="text" id="editTeacherID" placeholder="Teacher ID" required />
+      <input
+        type="text"
+        id="editTeacherName"
+        placeholder="Full Name"
+        required
+      />
+      <input
+        type="text"
+        id="editTeacherDept"
+        placeholder="Department"
+        required
+      />
+      <input type="date" id="editTeacherDOB" />
+      <input type="text" id="editTeacherAddress" placeholder="Address" />
+      <input type="text" id="editTeacherContact" placeholder="Contact Number" />
+      <input type="text" id="editTeacherHeight" placeholder="Height" />
+      <input type="text" id="editTeacherWeight" placeholder="Weight" />
+      <input type="text" id="editTeacherBlood" placeholder="Blood Type" />
+      <input
+        type="text"
+        id="editTeacherPastIllnesses"
+        placeholder="Past Illnesses"
+      />
+      <input type="text" id="editTeacherAllergies" placeholder="Allergies" />
+      <input
+        type="text"
+        id="editTeacherConditions"
+        placeholder="Pre-existing Conditions"
+      />
+      <input
+        type="text"
+        id="editTeacherVaccination"
+        placeholder="Vaccination Status"
+      />
+      <div style="display: flex; gap: 10px; margin-top: 15px">
+        <button type="submit" class="btn-primary" style="flex: 1">
+          Save Changes
+        </button>
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="closeEditTeacherModal()"
+          style="flex: 1; background-color: #6c757d"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openEditStudentModal(
+    id,
+    lrn,
+    name,
+    classVal,
+    dob,
+    address,
+    parentContact,
+    emergencyContact,
+    height,
+    weight,
+    blood,
+    pastIllnesses,
+    allergies,
+    conditions,
+    vaccination
+  ) {
+    document.getElementById("editStudentId").value = id;
+    document.getElementById("editStudentLRN").value = lrn;
+    document.getElementById("editStudentName").value = name;
+    document.getElementById("editStudentClass").value = classVal;
+    document.getElementById("editStudentDOB").value = dob;
+    document.getElementById("editStudentAddress").value = address;
+    document.getElementById("editStudentParentContact").value = parentContact;
+    document.getElementById("editStudentEmergencyContact").value =
+      emergencyContact;
+    document.getElementById("editStudentHeight").value = height;
+    document.getElementById("editStudentWeight").value = weight;
+    document.getElementById("editStudentBlood").value = blood;
+    document.getElementById("editStudentPastIllnesses").value = pastIllnesses;
+    document.getElementById("editStudentAllergies").value = allergies;
+    document.getElementById("editStudentConditions").value = conditions;
+    document.getElementById("editStudentVaccination").value = vaccination;
+
+    document.getElementById("editStudentModal").classList.add("show");
+  }
+
+  function closeEditStudentModal() {
+    document.getElementById("editStudentModal").classList.remove("show");
+  }
+
+  function openEditTeacherModal(
+    id,
+    teacherID,
+    name,
+    department,
+    dob,
+    address,
+    contact,
+    height,
+    weight,
+    blood,
+    pastIllnesses,
+    allergies,
+    conditions,
+    vaccination
+  ) {
+    document.getElementById("editTeacherId").value = id;
+    document.getElementById("editTeacherID").value = teacherID;
+    document.getElementById("editTeacherName").value = name;
+    document.getElementById("editTeacherDept").value = department;
+    document.getElementById("editTeacherDOB").value = dob;
+    document.getElementById("editTeacherAddress").value = address;
+    document.getElementById("editTeacherContact").value = contact;
+    document.getElementById("editTeacherHeight").value = height;
+    document.getElementById("editTeacherWeight").value = weight;
+    document.getElementById("editTeacherBlood").value = blood;
+    document.getElementById("editTeacherPastIllnesses").value = pastIllnesses;
+    document.getElementById("editTeacherAllergies").value = allergies;
+    document.getElementById("editTeacherConditions").value = conditions;
+    document.getElementById("editTeacherVaccination").value = vaccination;
+
+    document.getElementById("editTeacherModal").classList.add("show");
+  }
+
+  function closeEditTeacherModal() {
+    document.getElementById("editTeacherModal").classList.remove("show");
+  }
+
+  // Handle student form submission
+  document
+    .getElementById("editStudentForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const studentId = document.getElementById("editStudentId").value;
+
+      const formData = new FormData();
+      formData.append(
+        "studentLRN",
+        document.getElementById("editStudentLRN").value
+      );
+      formData.append("name", document.getElementById("editStudentName").value);
+      formData.append(
+        "class",
+        document.getElementById("editStudentClass").value
+      );
+      formData.append("dob", document.getElementById("editStudentDOB").value);
+      formData.append(
+        "address",
+        document.getElementById("editStudentAddress").value
+      );
+      formData.append(
+        "parentContact",
+        document.getElementById("editStudentParentContact").value
+      );
+      formData.append(
+        "emergencyContact",
+        document.getElementById("editStudentEmergencyContact").value
+      );
+      formData.append(
+        "height",
+        document.getElementById("editStudentHeight").value
+      );
+      formData.append(
+        "weight",
+        document.getElementById("editStudentWeight").value
+      );
+      formData.append(
+        "blood",
+        document.getElementById("editStudentBlood").value
+      );
+      formData.append(
+        "pastIllnesses",
+        document.getElementById("editStudentPastIllnesses").value
+      );
+      formData.append(
+        "allergies",
+        document.getElementById("editStudentAllergies").value
+      );
+      formData.append(
+        "conditions",
+        document.getElementById("editStudentConditions").value
+      );
+      formData.append(
+        "vaccination",
+        document.getElementById("editStudentVaccination").value
+      );
+
+      try {
+        const response = await fetch(`/edit_student/${studentId}`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert("Student updated successfully!");
+          location.reload();
+        } else {
+          alert("Error: " + result.message);
+        }
+      } catch (error) {
+        alert("Error updating student: " + error);
+      }
+    });
+
+  // Handle teacher form submission
+  document
+    .getElementById("editTeacherForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const teacherId = document.getElementById("editTeacherId").value;
+
+      const formData = new FormData();
+      formData.append(
+        "teacherID",
+        document.getElementById("editTeacherID").value
+      );
+      formData.append("name", document.getElementById("editTeacherName").value);
+      formData.append(
+        "department",
+        document.getElementById("editTeacherDept").value
+      );
+      formData.append("dob", document.getElementById("editTeacherDOB").value);
+      formData.append(
+        "address",
+        document.getElementById("editTeacherAddress").value
+      );
+      formData.append(
+        "contact",
+        document.getElementById("editTeacherContact").value
+      );
+      formData.append(
+        "height",
+        document.getElementById("editTeacherHeight").value
+      );
+      formData.append(
+        "weight",
+        document.getElementById("editTeacherWeight").value
+      );
+      formData.append(
+        "blood",
+        document.getElementById("editTeacherBlood").value
+      );
+      formData.append(
+        "pastIllnesses",
+        document.getElementById("editTeacherPastIllnesses").value
+      );
+      formData.append(
+        "allergies",
+        document.getElementById("editTeacherAllergies").value
+      );
+      formData.append(
+        "conditions",
+        document.getElementById("editTeacherConditions").value
+      );
+      formData.append(
+        "vaccination",
+        document.getElementById("editTeacherVaccination").value
+      );
+
+      try {
+        const response = await fetch(`/edit_teacher/${teacherId}`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert("Teacher updated successfully!");
+          location.reload();
+        } else {
+          alert("Error: " + result.message);
+        }
+      } catch (error) {
+        alert("Error updating teacher: " + error);
+      }
+    });
+
+  // Close edit modals when clicking outside
+  window.addEventListener("click", function (event) {
+    const editStudentModal = document.getElementById("editStudentModal");
+    const editTeacherModal = document.getElementById("editTeacherModal");
+
+    if (event.target === editStudentModal) {
+      editStudentModal.classList.remove("show");
+    }
+    if (event.target === editTeacherModal) {
+      editTeacherModal.classList.remove("show");
+    }
+  });
+</script>
+{% endblock %}

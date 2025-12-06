@@ -1,0 +1,119 @@
+{% extends "base.html" %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/add_student.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="form-card">
+  <h2>Edit Student</h2>
+
+  <form
+    action="{{ url_for('edit_student', id=student.id) }}"
+    method="POST"
+    class="student-form"
+  >
+    <input
+      type="text"
+      name="studentLRN"
+      placeholder="Student LRN"
+      value="{{ student.studentLRN }}"
+      required
+    />
+
+    <input
+      type="text"
+      name="name"
+      placeholder="Full Name"
+      value="{{ student.name }}"
+      required
+    />
+
+    <input
+      type="text"
+      name="class"
+      placeholder="Class/Grade"
+      value="{{ student.class }}"
+      required
+    />
+
+    <input
+      type="date"
+      name="dob"
+      placeholder="Date of Birth"
+      value="{{ student.dob or '' }}"
+    />
+
+    <input
+      type="text"
+      name="address"
+      placeholder="Address"
+      value="{{ student.address or '' }}"
+    />
+
+    <input
+      type="text"
+      name="parentContact"
+      placeholder="Parent/Guardian's Name"
+      value="{{ student.parentContact or '' }}"
+    />
+
+    <input
+      type="text"
+      name="emergencyContact"
+      placeholder="Emergency Contact"
+      value="{{ student.emergencyContact or '' }}"
+    />
+
+    <input
+      type="text"
+      name="height"
+      placeholder="Height"
+      value="{{ student.height or '' }}"
+    />
+
+    <input
+      type="text"
+      name="weight"
+      placeholder="Weight"
+      value="{{ student.weight or '' }}"
+    />
+
+    <input
+      type="text"
+      name="blood"
+      placeholder="Blood Type"
+      value="{{ student.blood or '' }}"
+    />
+
+    <input
+      type="text"
+      name="pastIllnesses"
+      placeholder="Past Illnesses"
+      value="{{ student.pastIllnesses or '' }}"
+    />
+
+    <input
+      type="text"
+      name="allergies"
+      placeholder="Allergies"
+      value="{{ student.allergies or '' }}"
+    />
+
+    <input
+      type="text"
+      name="conditions"
+      placeholder="Pre-existing Conditions"
+      value="{{ student.conditions or '' }}"
+    />
+
+    <input
+      type="text"
+      name="vaccination"
+      placeholder="Vaccination Status"
+      value="{{ student.vaccination or '' }}"
+    />
+
+    <button type="submit" class="btn-primary">Update Student</button>
+  </form>
+</div>
+{% endblock %}

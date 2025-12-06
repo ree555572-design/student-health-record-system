@@ -1,0 +1,571 @@
+{% extends "base.html" %} {% block extra_css %}
+<style>
+  .import-export-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .import-export-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 15px;
+  }
+
+  .import-export-header h1 {
+    margin: 0;
+    color: #333;
+  }
+
+  .import-export-header p {
+    color: #666;
+    margin-top: 5px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+  }
+
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+  }
+
+  .card-section {
+    margin-bottom: 25px;
+  }
+
+  .card-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .export-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .export-btn {
+    padding: 12px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+  }
+
+  .export-btn:hover {
+    background: #218838;
+  }
+
+  .import-area {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+    position: relative;
+  }
+
+  .import-area:hover {
+    background: #f8f9ff;
+  }
+
+  .import-area.drag-over {
+    background: #e7f3ff;
+    border-color: #0056b3;
+  }
+
+  .import-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .import-text {
+    color: #666;
+    font-size: 14px;
+    margin: 10px 0;
+  }
+
+  .import-text strong {
+    color: #333;
+  }
+
+  .file-input {
+    display: none;
+  }
+
+  .import-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    width: 100%;
+  }
+
+  .import-btn:hover {
+    background: #0056b3;
+  }
+
+  .import-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .file-name {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #666;
+    border-left: 4px solid #28a745;
+  }
+
+  .info-box {
+    background: #e7f3ff;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #004085;
+  }
+
+  .info-box strong {
+    color: #002c5c;
+  }
+
+  .warning-box {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #856404;
+  }
+
+  .warning-box strong {
+    color: #533f03;
+  }
+
+  .success-message {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #155724;
+    display: none;
+  }
+
+  .error-message {
+    background: #f8d7da;
+    border-left: 4px solid #dc3545;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #721c24;
+    display: none;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #007bff;
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  .csv-template-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .csv-template-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .grid-2 {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      padding: 20px;
+    }
+
+    .import-area {
+      padding: 20px;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="import-export-container">
+  <div class="import-export-header">
+    <h1>📊 Import / Export Data</h1>
+    <p>Bulk manage student and teacher records via CSV files</p>
+  </div>
+
+  <div class="grid-2">
+    <!-- Export Section -->
+    <div class="card">
+      <div class="card-header">📤 Export Data</div>
+
+      <div class="card-section">
+        <div class="section-title">Students</div>
+        <div class="export-btn-group">
+          <a href="{{ url_for('export_students_csv') }}" class="export-btn"
+            >Download Students (CSV)</a
+          >
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-title">Teachers</div>
+        <div class="export-btn-group">
+          <a href="{{ url_for('export_teachers_csv') }}" class="export-btn"
+            >Download Teachers (CSV)</a
+          >
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>ℹ️ Export Information:</strong>
+        <p style="margin: 5px 0 0 0">
+          Downloads your data in CSV format. Use this to backup data or for bulk
+          editing.
+        </p>
+      </div>
+    </div>
+
+    <!-- Import Section - Students -->
+    <div class="card">
+      <div class="card-header">📥 Import Data</div>
+
+      <div class="card-section">
+        <div class="section-title">Import Students</div>
+        <div class="import-area" id="studentImportArea">
+          <div class="import-icon">📄</div>
+          <div class="import-text">Click to select or drag CSV file here</div>
+          <div class="import-text" style="font-size: 12px; color: #999">
+            Maximum file size: 10MB
+          </div>
+          <input
+            type="file"
+            id="studentFile"
+            class="file-input"
+            accept=".csv"
+          />
+          <div
+            class="file-name"
+            id="studentFileName"
+            style="display: none"
+          ></div>
+        </div>
+        <button
+          class="import-btn"
+          id="studentImportBtn"
+          onclick="importStudents()"
+          disabled
+        >
+          Import Students
+        </button>
+        <div class="progress-bar" id="studentProgress">
+          <div class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="success-message" id="studentSuccess"></div>
+        <div class="error-message" id="studentError"></div>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Import Warning:</strong>
+        <p style="margin: 5px 0 0 0">
+          Importing will update existing records with matching LRN. Be careful!
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second Row - Teachers -->
+  <div class="grid-2" style="margin-top: 30px">
+    <div class="card">
+      <div class="card-header">📥 Import Teachers</div>
+
+      <div class="card-section">
+        <div class="import-area" id="teacherImportArea">
+          <div class="import-icon">📄</div>
+          <div class="import-text">Click to select or drag CSV file here</div>
+          <div class="import-text" style="font-size: 12px; color: #999">
+            Maximum file size: 10MB
+          </div>
+          <input
+            type="file"
+            id="teacherFile"
+            class="file-input"
+            accept=".csv"
+          />
+          <div
+            class="file-name"
+            id="teacherFileName"
+            style="display: none"
+          ></div>
+        </div>
+        <button
+          class="import-btn"
+          id="teacherImportBtn"
+          onclick="importTeachers()"
+          disabled
+        >
+          Import Teachers
+        </button>
+        <div class="progress-bar" id="teacherProgress">
+          <div class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="success-message" id="teacherSuccess"></div>
+        <div class="error-message" id="teacherError"></div>
+      </div>
+
+      <div class="warning-box">
+        <strong>⚠️ Import Warning:</strong>
+        <p style="margin: 5px 0 0 0">
+          Importing will update existing records with matching Teacher ID. Be
+          careful!
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">📋 CSV Format Guide</div>
+
+      <div class="card-section">
+        <div class="section-title">Students CSV Columns</div>
+        <code style="font-size: 11px; color: #666; line-height: 1.6">
+          studentLRN, name, class, dob, address, parentContact,<br />
+          emergencyContact, height, weight, blood, pastIllnesses,<br />
+          allergies, conditions, vaccination
+        </code>
+      </div>
+
+      <div class="card-section">
+        <div class="section-title">Teachers CSV Columns</div>
+        <code style="font-size: 11px; color: #666; line-height: 1.6">
+          teacherID, name, department, dob, address, contact,<br />
+          height, weight, blood, pastIllnesses, allergies,<br />
+          conditions, vaccination
+        </code>
+      </div>
+
+      <div class="info-box">
+        <strong>💡 Tips:</strong>
+        <ul style="margin: 8px 0 0 0; padding-left: 20px">
+          <li>Use the "Download" button to see the current format</li>
+          <li>First row must contain column headers</li>
+          <li>Save files as .csv format (UTF-8 recommended)</li>
+          <li>All dates should be in YYYY-MM-DD format</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Student Import
+  const studentArea = document.getElementById("studentImportArea");
+  const studentFile = document.getElementById("studentFile");
+  const studentFileName = document.getElementById("studentFileName");
+  const studentImportBtn = document.getElementById("studentImportBtn");
+
+  studentArea.addEventListener("click", () => studentFile.click());
+  studentArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    studentArea.classList.add("drag-over");
+  });
+  studentArea.addEventListener("dragleave", () =>
+    studentArea.classList.remove("drag-over")
+  );
+  studentArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    studentArea.classList.remove("drag-over");
+    if (e.dataTransfer.files.length > 0) {
+      studentFile.files = e.dataTransfer.files;
+      updateFileName("student");
+    }
+  });
+
+  studentFile.addEventListener("change", () => updateFileName("student"));
+
+  // Teacher Import
+  const teacherArea = document.getElementById("teacherImportArea");
+  const teacherFile = document.getElementById("teacherFile");
+  const teacherFileName = document.getElementById("teacherFileName");
+  const teacherImportBtn = document.getElementById("teacherImportBtn");
+
+  teacherArea.addEventListener("click", () => teacherFile.click());
+  teacherArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    teacherArea.classList.add("drag-over");
+  });
+  teacherArea.addEventListener("dragleave", () =>
+    teacherArea.classList.remove("drag-over")
+  );
+  teacherArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    teacherArea.classList.remove("drag-over");
+    if (e.dataTransfer.files.length > 0) {
+      teacherFile.files = e.dataTransfer.files;
+      updateFileName("teacher");
+    }
+  });
+
+  teacherFile.addEventListener("change", () => updateFileName("teacher"));
+
+  function updateFileName(type) {
+    const file = type === "student" ? studentFile : teacherFile;
+    const nameDiv = type === "student" ? studentFileName : teacherFileName;
+    const btn = type === "student" ? studentImportBtn : teacherImportBtn;
+
+    if (file.files.length > 0) {
+      const fileName = file.files[0].name;
+      const fileSize = (file.files[0].size / 1024).toFixed(2);
+      nameDiv.textContent = `✓ ${fileName} (${fileSize} KB)`;
+      nameDiv.style.display = "block";
+      btn.disabled = false;
+    } else {
+      nameDiv.style.display = "none";
+      btn.disabled = true;
+    }
+  }
+
+  function importStudents() {
+    if (studentFile.files.length === 0) {
+      alert("Please select a file");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", studentFile.files[0]);
+
+    document.getElementById("studentProgress").style.display = "block";
+    document.getElementById("studentSuccess").style.display = "none";
+    document.getElementById("studentError").style.display = "none";
+
+    fetch("/api/import/students", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("studentProgress").style.display = "none";
+        if (data.success) {
+          const msg = document.getElementById("studentSuccess");
+          msg.textContent = "✓ " + data.message;
+          msg.style.display = "block";
+          studentFile.value = "";
+          studentFileName.style.display = "none";
+          studentImportBtn.disabled = true;
+        } else {
+          const msg = document.getElementById("studentError");
+          msg.textContent = "✗ Error: " + data.message;
+          msg.style.display = "block";
+        }
+      })
+      .catch((error) => {
+        document.getElementById("studentProgress").style.display = "none";
+        const msg = document.getElementById("studentError");
+        msg.textContent = "✗ Error: " + error;
+        msg.style.display = "block";
+      });
+  }
+
+  function importTeachers() {
+    if (teacherFile.files.length === 0) {
+      alert("Please select a file");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", teacherFile.files[0]);
+
+    document.getElementById("teacherProgress").style.display = "block";
+    document.getElementById("teacherSuccess").style.display = "none";
+    document.getElementById("teacherError").style.display = "none";
+
+    fetch("/api/import/teachers", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("teacherProgress").style.display = "none";
+        if (data.success) {
+          const msg = document.getElementById("teacherSuccess");
+          msg.textContent = "✓ " + data.message;
+          msg.style.display = "block";
+          teacherFile.value = "";
+          teacherFileName.style.display = "none";
+          teacherImportBtn.disabled = true;
+        } else {
+          const msg = document.getElementById("teacherError");
+          msg.textContent = "✗ Error: " + data.message;
+          msg.style.display = "block";
+        }
+      })
+      .catch((error) => {
+        document.getElementById("teacherProgress").style.display = "none";
+        const msg = document.getElementById("teacherError");
+        msg.textContent = "✗ Error: " + error;
+        msg.style.display = "block";
+      });
+  }
+</script>
+
+{% endblock %}

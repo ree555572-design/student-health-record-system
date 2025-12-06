@@ -1,0 +1,162 @@
+/* ===== General Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f6fa;
+  color: #333;
+}
+
+/* ===== Form Container ===== */
+.form-container {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #2f3640;
+}
+
+/* ===== Form Inputs ===== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+form input,
+form select {
+  padding: 12px 15px;
+  border: 1px solid #dcdde1;
+  border-radius: 5px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+form input:focus,
+form select:focus {
+  border-color: #00a8ff;
+}
+
+/* ===== Submit Button ===== */
+button.btn {
+  padding: 12px;
+  background-color: #a83e51;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+button.btn:hover {
+  background-color: #c1576a;
+}
+
+/* ===== Responsive ===== */
+
+/* Tablet (768px to 1024px) */
+@media screen and (max-width: 1024px) {
+  .form-container {
+    max-width: 90%;
+    margin: 40px auto;
+    padding: 25px;
+  }
+
+  .form-container h2 {
+    font-size: 20px;
+  }
+
+  form input,
+  form select {
+    padding: 11px 12px;
+    font-size: 0.95rem;
+  }
+
+  button.btn {
+    padding: 11px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Tablets & Large Phones (600px to 767px) */
+@media screen and (max-width: 767px) {
+  .form-container {
+    max-width: 95%;
+    margin: 30px auto;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .form-container h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  form {
+    gap: 12px;
+  }
+
+  form input,
+  form select {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+
+  button.btn {
+    padding: 10px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+}
+
+/* Mobile Phones (320px to 599px) */
+@media screen and (max-width: 599px) {
+  .form-container {
+    width: 100%;
+    max-width: none;
+    margin: 15px auto;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .form-container h2 {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
+  form {
+    gap: 10px;
+  }
+
+  form input,
+  form select {
+    padding: 9px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  button.btn {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  button.btn:active {
+    background-color: #8b3240;
+  }
+}

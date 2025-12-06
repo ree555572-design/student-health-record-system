@@ -1,0 +1,597 @@
+{% extends "base.html" %} {% block extra_css %}
+<style>
+  .backups-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .backups-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 15px;
+  }
+
+  .backups-header h1 {
+    margin: 0;
+    color: #333;
+  }
+
+  .backup-btn {
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .backup-btn:hover {
+    background: #218838;
+  }
+
+  .backups-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+
+  .backups-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .backups-table th {
+    background: #f8f9fa;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+  }
+
+  .backups-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .backups-table tr:hover {
+    background: #f9f9f9;
+  }
+
+  .backup-type {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .type-manual {
+    background: #cce5ff;
+    color: #0056b3;
+  }
+
+  .type-automatic {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .backup-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .backup-actions button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .btn-restore {
+    background: #17a2b8;
+    color: white;
+  }
+
+  .btn-restore:hover {
+    background: #138496;
+  }
+
+  .btn-delete {
+    background: #dc3545;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background: #c82333;
+  }
+
+  .info-box {
+    background: #e7f3ff;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #004085;
+  }
+
+  .info-box strong {
+    color: #002c5c;
+  }
+
+  .warning-box {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #856404;
+  }
+
+  .warning-box strong {
+    color: #533f03;
+  }
+
+  .success-message {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #155724;
+    display: none;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .modal-message {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-confirm {
+    background: #dc3545;
+    color: white;
+  }
+
+  .btn-confirm:hover {
+    background: #c82333;
+  }
+
+  .btn-cancel {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn-cancel:hover {
+    background: #5a6268;
+  }
+
+  .close {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+  }
+
+  .close:hover {
+    color: #000;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: #999;
+  }
+
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .stat-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #007bff;
+  }
+
+  .stat-label {
+    color: #666;
+    font-size: 13px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 5px;
+  }
+
+  @media (max-width: 768px) {
+    .backups-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .backup-btn {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .backups-table th,
+    .backups-table td {
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .backup-actions {
+      flex-wrap: wrap;
+    }
+
+    .backup-actions button {
+      flex: 1;
+      min-width: 60px;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="backups-container">
+  <div class="backups-header">
+    <div>
+      <h1>💾 Database Backups</h1>
+      <p style="color: #666; margin-top: 5px">
+        Manage and restore database backups
+      </p>
+    </div>
+    <button onclick="createBackup()" class="backup-btn">+ Create Backup</button>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="stat-label">Total Backups</div>
+      <div class="stat-value">{{ backups|length }}</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #28a745">
+      <div class="stat-label">Latest Backup</div>
+      <div class="stat-value">
+        {% if backups %} {{ backups[0]['created_at'][:10] }} {% else %} None {%
+        endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>ℹ️ Backup Information:</strong>
+    <p style="margin: 5px 0 0 0">
+      Create manual backups before major changes. Automatic backups are created
+      daily at midnight. You can restore any backup to recover previous database
+      states.
+    </p>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">✅ Success!</div>
+      <div class="modal-message" id="successMessage"></div>
+      <div class="modal-actions">
+        <button class="btn-confirm" onclick="closeSuccessModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Backup Confirmation Modal -->
+  <div id="createBackupModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">💾 Create Backup?</div>
+      <div class="modal-message">
+        Create a new backup now?<br /><br />
+        This will save a copy of the current database.
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeCreateBackupModal()">
+          Cancel
+        </button>
+        <button class="btn-confirm" onclick="proceedCreateBackup()">
+          Create
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backups Table -->
+  {% if backups %}
+  <div class="backups-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Backup Name</th>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Size</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for backup in backups %}
+        <tr>
+          <td>
+            <code
+              style="
+                font-size: 12px;
+                background: #f5f5f5;
+                padding: 4px 8px;
+                border-radius: 3px;
+              "
+              >{{ backup['backup_name'] }}</code
+            >
+          </td>
+          <td>{{ backup['created_at'] }}</td>
+          <td>
+            <span class="backup-type type-{{ backup['backup_type'] }}"
+              >{{ backup['backup_type']|upper }}</span
+            >
+          </td>
+          <td>{{ backup['file_size'] }}</td>
+          <td>
+            <div class="backup-actions">
+              <button
+                class="btn-restore"
+                data-backup-name="{{ backup['backup_name'] }}"
+                onclick="confirmRestore(this.dataset.backupName)"
+              >
+                Restore
+              </button>
+              <button
+                class="btn-delete"
+                data-backup-name="{{ backup['backup_name'] }}"
+                onclick="confirmDelete(this.dataset.backupName)"
+              >
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">📦</div>
+    <p>No backups yet. Create one to get started!</p>
+    <button onclick="createBackup()" class="backup-btn">
+      Create First Backup
+    </button>
+  </div>
+  {% endif %}
+
+  <div class="warning-box">
+    <strong>⚠️ Important:</strong>
+    <p style="margin: 5px 0 0 0">
+      Restoring a backup will replace the current database with the backup
+      version. A safety backup will be created before restoration. Only Super
+      Administrators can restore backups.
+    </p>
+  </div>
+</div>
+
+<!-- Restore Confirmation Modal -->
+<div id="restoreModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeRestoreModal()">&times;</span>
+    <div class="modal-title">⚠️ Restore Backup?</div>
+    <div class="modal-message">
+      Are you sure you want to restore from
+      <strong id="restoreBackupName"></strong>?<br /><br />
+      This will replace the current database. A safety backup will be created.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeRestoreModal()">Cancel</button>
+      <button class="btn-confirm" onclick="restoreBackup()">Restore</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeDeleteModal()">&times;</span>
+    <div class="modal-title">🗑️ Delete Backup?</div>
+    <div class="modal-message">
+      Are you sure you want to delete
+      <strong id="deleteBackupName"></strong>?<br /><br />
+      This action cannot be undone.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-confirm" onclick="deleteBackup()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedBackup = null;
+
+  function createBackup() {
+    document.getElementById("createBackupModal").style.display = "block";
+  }
+
+  function closeCreateBackupModal() {
+    document.getElementById("createBackupModal").style.display = "none";
+  }
+
+  function proceedCreateBackup() {
+    closeCreateBackupModal();
+    fetch("/api/backup/create", {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          showSuccess(data.message);
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          alert("Error: " + data.message);
+        }
+      })
+      .catch((error) => alert("Error: " + error));
+  }
+
+  function confirmRestore(backupName) {
+    selectedBackup = backupName;
+    document.getElementById("restoreBackupName").textContent = backupName;
+    document.getElementById("restoreModal").style.display = "block";
+  }
+
+  function closeRestoreModal() {
+    document.getElementById("restoreModal").style.display = "none";
+  }
+
+  function restoreBackup() {
+    if (!selectedBackup) return;
+
+    fetch(`/api/backup/restore/${selectedBackup}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        closeRestoreModal();
+        if (data.success) {
+          showSuccess(data.message);
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          alert("Error: " + data.message);
+        }
+      })
+      .catch((error) => alert("Error: " + error));
+  }
+
+  function confirmDelete(backupName) {
+    selectedBackup = backupName;
+    document.getElementById("deleteBackupName").textContent = backupName;
+    document.getElementById("deleteModal").style.display = "block";
+  }
+
+  function closeDeleteModal() {
+    document.getElementById("deleteModal").style.display = "none";
+  }
+
+  function deleteBackup() {
+    if (!selectedBackup) return;
+
+    fetch(`/api/backup/delete/${encodeURIComponent(selectedBackup)}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        closeDeleteModal();
+        if (data.success) {
+          showSuccess(data.message);
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          alert("Error: " + data.message);
+        }
+      })
+      .catch((error) => {
+        alert("Error deleting backup: " + error);
+        closeDeleteModal();
+      });
+  }
+
+  function showSuccess(message) {
+    const msg = document.getElementById("successMessage");
+    msg.textContent = message;
+    document.getElementById("successModal").style.display = "block";
+  }
+
+  function closeSuccessModal() {
+    document.getElementById("successModal").style.display = "none";
+  }
+
+  window.onclick = function (event) {
+    const restoreModal = document.getElementById("restoreModal");
+    const deleteModal = document.getElementById("deleteModal");
+    if (event.target === restoreModal) {
+      restoreModal.style.display = "none";
+    }
+    if (event.target === deleteModal) {
+      deleteModal.style.display = "none";
+    }
+  };
+</script>
+
+{% endblock %}

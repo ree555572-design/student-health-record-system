@@ -1,0 +1,260 @@
+{% extends "base.html" %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/add_student.css') }}"
+/>
+<style>
+  .form-card {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-card h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #2f3640;
+    font-size: 28px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  label {
+    font-weight: 600;
+    color: #2f3640;
+    margin-bottom: 5px;
+  }
+
+  input,
+  select {
+    padding: 12px 15px;
+    border: 1px solid #dcdde1;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  textarea {
+    padding: 12px 15px;
+    border: 1px solid #dcdde1;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+
+  .form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+  }
+
+  button,
+  a.btn-cancel {
+    flex: 1;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn-submit {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-submit:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-cancel {
+    background-color: #e0e0e0;
+    color: #333;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-cancel:hover {
+    background-color: #d0d0d0;
+  }
+
+  .required {
+    color: #dc3545;
+  }
+
+  .help-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 3px;
+  }
+
+  @media screen and (max-width: 600px) {
+    .form-card {
+      margin: 20px;
+      padding: 20px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .form-buttons {
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="form-card">
+  <h2>📋 Add New Medicine</h2>
+
+  <form method="POST" class="form-group">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <!-- Item Name & Category -->
+    <div class="form-row">
+      <div>
+        <label for="item_name"
+          >Medicine Name <span class="required">*</span></label
+        >
+        <input
+          type="text"
+          id="item_name"
+          name="item_name"
+          placeholder="e.g., Paracetamol, Ibuprofen"
+          required
+        />
+      </div>
+      <div>
+        <label for="category">Category <span class="required">*</span></label>
+        <select id="category" name="category" required>
+          <option value="">Select Category</option>
+          <option value="Medicine">Medicine</option>
+          <option value="Medical Equipment">Medical Equipment</option>
+          <option value="Supplies">Supplies</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Quantity & Unit -->
+    <div class="form-row">
+      <div>
+        <label for="quantity">Quantity <span class="required">*</span></label>
+        <input
+          type="number"
+          id="quantity"
+          name="quantity"
+          placeholder="e.g., 100"
+          min="0"
+          required
+        />
+        <p class="help-text">Current stock quantity</p>
+      </div>
+      <div>
+        <label for="unit">Unit <span class="required">*</span></label>
+        <select id="unit" name="unit" required>
+          <option value="">Select Unit</option>
+          <option value="tablets">Tablets</option>
+          <option value="capsules">Capsules</option>
+          <option value="ml">ML</option>
+          <option value="bottles">Bottles</option>
+          <option value="boxes">Boxes</option>
+          <option value="units">Units</option>
+          <option value="packs">Packs</option>
+          <option value="strips">Strips</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Status & Expiry Date -->
+    <div class="form-row">
+      <div>
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="available">Available</option>
+          <option value="unavailable">Unavailable</option>
+        </select>
+      </div>
+      <div>
+        <label for="expiry_date">Expiry Date</label>
+        <input type="date" id="expiry_date" name="expiry_date" />
+        <p class="help-text">Leave blank if not applicable</p>
+      </div>
+    </div>
+
+    <!-- Reorder Level & Supplier -->
+    <div class="form-row">
+      <div>
+        <label for="reorder_level"
+          >Reorder Level <span class="required">*</span></label
+        >
+        <input
+          type="number"
+          id="reorder_level"
+          name="reorder_level"
+          placeholder="e.g., 20"
+          min="0"
+          value="0"
+          required
+        />
+        <p class="help-text">Minimum quantity before reordering</p>
+      </div>
+      <div>
+        <label for="supplier">Supplier</label>
+        <input
+          type="text"
+          id="supplier"
+          name="supplier"
+          placeholder="e.g., Medical Supply Co."
+        />
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div>
+      <label for="notes">Notes</label>
+      <textarea
+        id="notes"
+        name="notes"
+        placeholder="Additional notes or special instructions..."
+      ></textarea>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-buttons">
+      <button type="submit" class="btn-submit">✓ Add Medicine</button>
+      <a href="{{ url_for('inventory') }}" class="btn-cancel">← Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

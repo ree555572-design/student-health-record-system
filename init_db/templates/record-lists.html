@@ -1,0 +1,644 @@
+{% extends "base.html" %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/student_list.css') }}"
+/>
+<style>
+  .records-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .modal.show {
+    display: block;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    animation: slideIn 0.3s;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .close:hover {
+    color: black;
+  }
+
+  .section-title {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 30px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  table th,
+  table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+
+  table tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .btn-view {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .btn-view:hover {
+    background-color: #138496;
+  }
+
+  .detail-row {
+    display: flex;
+    flex-direction: column;
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .detail-label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+
+  .detail-value {
+    color: #666;
+    font-size: 14px;
+    word-break: break-word;
+  }
+
+  /* Search Bar Styling */
+  .search-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .search-input {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 300px;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  .search-label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .no-results {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin-top: 10px;
+  }
+</style>
+{% endblock %} {% block content %}
+
+<h2>Record Lists</h2>
+<!-- Students Section -->
+<h2 class="section-title">Students</h2>
+<div class="search-container">
+  <label class="search-label" for="studentSearchInput">Search by LRN:</label>
+  <input
+    type="text"
+    id="studentSearchInput"
+    class="search-input"
+    placeholder="Enter student LRN..."
+    onkeyup="filterStudentTable()"
+  />
+</div>
+<div class="table-wrapper">
+  <table id="studentTable">
+    <thead>
+      <tr>
+        <th>LRN</th>
+        <th>Name</th>
+        <th>Class</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td>{{ student.studentLRN }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.class }}</td>
+        <td>
+          <div class="action-buttons">
+            <button
+              class="btn-view btn-sm"
+              data-student-id="{{ student.id }}"
+              onclick="viewStudent(this.dataset.studentId)"
+            >
+              View
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Teachers Section -->
+<h2 class="section-title">Teachers</h2>
+<div class="search-container">
+  <label class="search-label" for="teacherSearchInput"
+    >Search by Teacher Name:</label
+  >
+  <input
+    type="text"
+    id="teacherSearchInput"
+    class="search-input"
+    placeholder="Enter teacher name..."
+    onkeyup="filterTeacherTable()"
+  />
+</div>
+<div class="table-wrapper">
+  <table id="teacherTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Subject</th>
+        <th>Contact</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for teacher in teachers %}
+      <tr>
+        <td>{{ teacher.name }}</td>
+        <td>{{ teacher.subject or "N/A" }}</td>
+        <td>{{ teacher.contact or "N/A" }}</td>
+        <td>
+          <div class="action-buttons">
+            <button
+              class="btn-view btn-sm"
+              data-teacher-id="{{ teacher.id }}"
+              onclick="viewTeacher(this.dataset.teacherId)"
+            >
+              View
+            </button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Student Details Modal -->
+<div id="studentModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Student Details</h2>
+      <button class="close" onclick="closeStudentModal()">&times;</button>
+    </div>
+    <div id="studentModalBody"></div>
+  </div>
+</div>
+
+<!-- Teacher Details Modal -->
+<div id="teacherModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Teacher Details</h2>
+      <button class="close" onclick="closeTeacherModal()">&times;</button>
+    </div>
+    <div id="teacherModalBody"></div>
+  </div>
+</div>
+
+<!-- Data Storage -->
+<div id="dataContainer" style="display: none">
+  <div id="studentDataContainer">
+    {% for student in students %}
+    <div
+      data-id="{{ student.id }}"
+      data-name="{{ student.name }}"
+      data-lrn="{{ student.studentLRN }}"
+      data-class="{{ student.class }}"
+      data-dob="{{ student.dob or 'N/A' }}"
+      data-address="{{ student.address or 'N/A' }}"
+      data-parentcontact="{{ student.parentContact or 'N/A' }}"
+      data-emergencycontact="{{ student.emergencyContact or 'N/A' }}"
+      data-height="{{ student.height or 'N/A' }}"
+      data-weight="{{ student.weight or 'N/A' }}"
+      data-blood="{{ student.blood or 'N/A' }}"
+      data-pastillnesses="{{ student.pastIllnesses or 'N/A' }}"
+      data-allergies="{{ student.allergies or 'N/A' }}"
+      data-conditions="{{ student.conditions or 'N/A' }}"
+      data-vaccination="{{ student.vaccination or 'N/A' }}"
+      class="student-data"
+    ></div>
+    {% endfor %}
+  </div>
+
+  <div id="teacherDataContainer">
+    {% for teacher in teachers %}
+    <div
+      data-id="{{ teacher.id }}"
+      data-teacherid="{{ teacher.teacherID or 'N/A' }}"
+      data-name="{{ teacher.name }}"
+      data-department="{{ teacher.department or 'N/A' }}"
+      data-subject="{{ teacher.subject or 'N/A' }}"
+      data-dob="{{ teacher.dob or 'N/A' }}"
+      data-address="{{ teacher.address or 'N/A' }}"
+      data-contact="{{ teacher.contact or 'N/A' }}"
+      data-email="{{ teacher.email or 'N/A' }}"
+      data-height="{{ teacher.height or 'N/A' }}"
+      data-weight="{{ teacher.weight or 'N/A' }}"
+      data-blood="{{ teacher.blood or 'N/A' }}"
+      data-pastillnesses="{{ teacher.pastIllnesses or 'N/A' }}"
+      data-allergies="{{ teacher.allergies or 'N/A' }}"
+      data-conditions="{{ teacher.conditions or 'N/A' }}"
+      data-vaccination="{{ teacher.vaccination or 'N/A' }}"
+      class="teacher-data"
+    ></div>
+    {% endfor %}
+  </div>
+</div>
+
+<script type="text/javascript">
+  function viewStudent(studentId) {
+    const studentDiv = document.querySelector(
+      `.student-data[data-id="${studentId}"]`
+    );
+    if (!studentDiv) return;
+
+    const data = studentDiv.dataset;
+    const html = `
+      <div class="detail-row">
+        <span class="detail-label">LRN:</span>
+        <span class="detail-value">${data.lrn}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Name:</span>
+        <span class="detail-value">${data.name}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Class:</span>
+        <span class="detail-value">${data.class}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Date of Birth:</span>
+        <span class="detail-value">${data.dob}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Address:</span>
+        <span class="detail-value">${data.address}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Parent Contact:</span>
+        <span class="detail-value">${data.parentcontact}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Emergency Contact:</span>
+        <span class="detail-value">${data.emergencycontact}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Height:</span>
+        <span class="detail-value">${data.height}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Weight:</span>
+        <span class="detail-value">${data.weight}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Blood Type:</span>
+        <span class="detail-value">${data.blood}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Past Illnesses:</span>
+        <span class="detail-value">${data.pastillnesses}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Allergies:</span>
+        <span class="detail-value">${data.allergies}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Pre-existing Conditions:</span>
+        <span class="detail-value">${data.conditions}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Vaccination Status:</span>
+        <span class="detail-value">${data.vaccination}</span>
+      </div>
+    `;
+    document.getElementById("studentModalBody").innerHTML = html;
+    document.getElementById("studentModal").style.display = "block";
+  }
+
+  function closeStudentModal() {
+    document.getElementById("studentModal").style.display = "none";
+  }
+
+  function viewTeacher(teacherId) {
+    const teacherDiv = document.querySelector(
+      `.teacher-data[data-id="${teacherId}"]`
+    );
+    if (!teacherDiv) return;
+
+    const data = teacherDiv.dataset;
+    const html = `
+      <div class="detail-row">
+        <span class="detail-label">Teacher ID:</span>
+        <span class="detail-value">${data.teacherid}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Name:</span>
+        <span class="detail-value">${data.name}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Department:</span>
+        <span class="detail-value">${data.department}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Date of Birth:</span>
+        <span class="detail-value">${data.dob}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Address:</span>
+        <span class="detail-value">${data.address}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Contact:</span>
+        <span class="detail-value">${data.contact}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Height:</span>
+        <span class="detail-value">${data.height}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Weight:</span>
+        <span class="detail-value">${data.weight}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Blood Type:</span>
+        <span class="detail-value">${data.blood}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Past Illnesses:</span>
+        <span class="detail-value">${data.pastillnesses}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Allergies:</span>
+        <span class="detail-value">${data.allergies}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Pre-existing Conditions:</span>
+        <span class="detail-value">${data.conditions}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Vaccination Status:</span>
+        <span class="detail-value">${data.vaccination}</span>
+      </div>
+    `;
+    document.getElementById("teacherModalBody").innerHTML = html;
+    document.getElementById("teacherModal").style.display = "block";
+  }
+
+  function closeTeacherModal() {
+    document.getElementById("teacherModal").style.display = "none";
+  }
+
+  window.addEventListener("click", function (event) {
+    const studentModal = document.getElementById("studentModal");
+    const teacherModal = document.getElementById("teacherModal");
+    const editStudentModal = document.getElementById("editStudentModal");
+    const editTeacherModal = document.getElementById("editTeacherModal");
+
+    if (event.target === studentModal) {
+      studentModal.style.display = "none";
+    }
+    if (event.target === teacherModal) {
+      teacherModal.style.display = "none";
+    }
+    if (event.target === editStudentModal) {
+      editStudentModal.style.display = "none";
+    }
+    if (event.target === editTeacherModal) {
+      editTeacherModal.style.display = "none";
+    }
+  });
+
+  // Search and Filter Functions
+  function filterStudentTable() {
+    const searchInput = document
+      .getElementById("studentSearchInput")
+      .value.toLowerCase();
+    const table = document.getElementById("studentTable");
+    const rows = table
+      .getElementsByTagName("tbody")[0]
+      .getElementsByTagName("tr");
+    let visibleCount = 0;
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].classList.contains("no-results-row")) continue;
+      const lrnCell = rows[i].getElementsByTagName("td")[0]; // LRN is in column 0
+      if (lrnCell) {
+        const lrnValue = lrnCell.textContent.toLowerCase();
+        if (lrnValue.includes(searchInput)) {
+          rows[i].style.display = "";
+          visibleCount++;
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+
+    // Show "No results" message if no matches
+    const tbody = table.getElementsByTagName("tbody")[0];
+    let noResultsMsg = tbody.querySelector(".no-results-row");
+    if (visibleCount === 0 && searchInput !== "") {
+      if (!noResultsMsg) {
+        const row = tbody.insertRow();
+        row.className = "no-results-row";
+        const cell = row.insertCell(0);
+        cell.colSpan = 4;
+        cell.innerHTML =
+          '<div class="no-results">No students found with this LRN</div>';
+      }
+    } else if (noResultsMsg) {
+      noResultsMsg.remove();
+    }
+  }
+
+  function filterTeacherTable() {
+    const searchInput = document
+      .getElementById("teacherSearchInput")
+      .value.toLowerCase();
+    const table = document.getElementById("teacherTable");
+    const rows = table
+      .getElementsByTagName("tbody")[0]
+      .getElementsByTagName("tr");
+    let visibleCount = 0;
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].classList.contains("no-results-row")) continue;
+      const nameCell = rows[i].getElementsByTagName("td")[0]; // Name is in column 0
+      if (nameCell) {
+        const nameValue = nameCell.textContent.toLowerCase();
+        if (nameValue.includes(searchInput)) {
+          rows[i].style.display = "";
+          visibleCount++;
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+
+    // Show "No results" message if no matches
+    const tbody = table.getElementsByTagName("tbody")[0];
+    let noResultsMsg = tbody.querySelector(".no-results-row");
+    if (visibleCount === 0 && searchInput !== "") {
+      if (!noResultsMsg) {
+        const row = tbody.insertRow();
+        row.className = "no-results-row";
+        const cell = row.insertCell(0);
+        cell.colSpan = 4;
+        cell.innerHTML =
+          '<div class="no-results">No teachers found with this name</div>';
+      }
+    } else if (noResultsMsg) {
+      noResultsMsg.remove();
+    }
+  }
+</script>
+{% endblock %}

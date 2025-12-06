@@ -1,0 +1,543 @@
+{% extends "base.html" %} {% block content %}
+<div class="container-fluid py-5">
+  <!-- Header -->
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <div style="margin-bottom: 1.5rem">
+        <h1
+          style="
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #6a1b2a;
+            margin-bottom: 0.5rem;
+          "
+        >
+          📊 Reports & Export
+        </h1>
+        <p style="font-size: 1.1rem; color: #888; margin: 0">
+          Generate and export health records, class reports, and inventory data
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Export Cards -->
+  <div class="row mb-5">
+    <div class="col-md-4 mb-3">
+      <div
+        class="export-card"
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(106, 27, 42, 0.95) 0%,
+            rgba(139, 35, 64, 0.95) 100%
+          );
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 16px;
+          padding: 2rem 1.5rem;
+          color: white;
+          backdrop-filter: blur(10px);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          box-shadow: 0 8px 32px rgba(106, 27, 42, 0.2);
+          text-align: center;
+        "
+      >
+        <div style="font-size: 2.5rem; margin-bottom: 1rem">👥</div>
+        <h5 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem">
+          Student Records
+        </h5>
+        <p style="font-size: 0.95rem; opacity: 0.9; margin-bottom: 1.5rem">
+          Export all student health data
+        </p>
+        <a
+          href="/export/students/csv"
+          class="btn"
+          style="
+            background: white;
+            color: #6a1b2a;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+          "
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.2)';"
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+        >
+          <i class="bx bxs-file-csv"></i> Export CSV
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div
+        class="export-card"
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(106, 27, 42, 0.95) 0%,
+            rgba(139, 35, 64, 0.95) 100%
+          );
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 16px;
+          padding: 2rem 1.5rem;
+          color: white;
+          backdrop-filter: blur(10px);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          box-shadow: 0 8px 32px rgba(106, 27, 42, 0.2);
+          text-align: center;
+        "
+      >
+        <div style="font-size: 2.5rem; margin-bottom: 1rem">👨‍🏫</div>
+        <h5 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem">
+          Teacher Records
+        </h5>
+        <p style="font-size: 0.95rem; opacity: 0.9; margin-bottom: 1.5rem">
+          Export all teacher health data
+        </p>
+        <a
+          href="/export/teachers/csv"
+          class="btn"
+          style="
+            background: white;
+            color: #6a1b2a;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+          "
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.2)';"
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+        >
+          <i class="bx bxs-file-csv"></i> Export CSV
+        </a>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div
+        class="export-card"
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(106, 27, 42, 0.95) 0%,
+            rgba(139, 35, 64, 0.95) 100%
+          );
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 16px;
+          padding: 2rem 1.5rem;
+          color: white;
+          backdrop-filter: blur(10px);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          box-shadow: 0 8px 32px rgba(106, 27, 42, 0.2);
+          text-align: center;
+        "
+      >
+        <div style="font-size: 2.5rem; margin-bottom: 1rem">📦</div>
+        <h5 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem">
+          Inventory
+        </h5>
+        <p style="font-size: 0.95rem; opacity: 0.9; margin-bottom: 1.5rem">
+          Export inventory status
+        </p>
+        <a
+          href="/export/inventory/csv"
+          class="btn"
+          style="
+            background: white;
+            color: #6a1b2a;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+          "
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.2)';"
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+        >
+          <i class="bx bxs-file-csv"></i> Export CSV
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Class Health Reports -->
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.8);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 16px;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        "
+      >
+        <div
+          style="
+            background: linear-gradient(135deg, #6a1b2a 0%, #8b2340 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 14px 14px 0 0;
+          "
+        >
+          <h5 style="margin: 0; font-size: 1.3rem; font-weight: 600">
+            📋 Class Health Reports
+          </h5>
+        </div>
+        <div style="padding: 2rem">
+          <p style="color: #666; margin-bottom: 1.5rem; font-size: 1rem">
+            Select a class to view health overview and statistics
+          </p>
+          <div class="row">
+            {% if classes %} {% for class_name in classes %}
+            <div class="col-md-3 mb-3">
+              <a
+                href="/class-health-report/{{ class_name }}"
+                style="
+                  display: block;
+                  padding: 1rem;
+                  background: linear-gradient(
+                    135deg,
+                    rgba(106, 27, 42, 0.1) 0%,
+                    rgba(139, 35, 64, 0.1) 100%
+                  );
+                  border: 2px solid #6a1b2a;
+                  border-radius: 10px;
+                  text-decoration: none;
+                  color: #6a1b2a;
+                  font-weight: 600;
+                  text-align: center;
+                  transition: all 0.3s ease;
+                "
+                onmouseover="this.style.background='linear-gradient(135deg, #6a1b2a 0%, #8b2340 100%)'; this.style.color='white'; this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.background='linear-gradient(135deg, rgba(106, 27, 42, 0.1) 0%, rgba(139, 35, 64, 0.1) 100%)'; this.style.color='#6a1b2a'; this.style.transform='translateY(0)';"
+              >
+                <i class="bx bx-bar-chart-alt-2"></i> {{ class_name }}
+              </a>
+            </div>
+            {% endfor %} {% else %}
+            <div class="col-md-12">
+              <p style="color: #999; text-align: center; padding: 2rem 0">
+                No classes found. Add students to generate class reports.
+              </p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory Report -->
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.8);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 16px;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        "
+      >
+        <div
+          style="
+            background: linear-gradient(135deg, #6a1b2a 0%, #8b2340 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 14px 14px 0 0;
+          "
+        >
+          <h5 style="margin: 0; font-size: 1.3rem; font-weight: 600">
+            📦 Inventory Status Summary
+          </h5>
+        </div>
+        <div style="padding: 2rem">
+          <div class="row">
+            <div class="col-md-3 text-center">
+              <div
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(106, 27, 42, 0.1) 0%,
+                    rgba(139, 35, 64, 0.1) 100%
+                  );
+                  padding: 1.5rem;
+                  border-radius: 12px;
+                  border-left: 4px solid #6a1b2a;
+                "
+              >
+                <h6
+                  style="
+                    color: #888;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  Total Items
+                </h6>
+                <h3 style="color: #6a1b2a; font-size: 2.5rem; margin: 0">
+                  {{ inventory_report.get('total_items', 0) }}
+                </h3>
+              </div>
+            </div>
+            <div class="col-md-3 text-center">
+              <div
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(40, 167, 69, 0.1) 0%,
+                    rgba(34, 197, 94, 0.1) 100%
+                  );
+                  padding: 1.5rem;
+                  border-radius: 12px;
+                  border-left: 4px solid #28a745;
+                "
+              >
+                <h6
+                  style="
+                    color: #888;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  In Stock
+                </h6>
+                <h3 style="color: #28a745; font-size: 2.5rem; margin: 0">
+                  {{ inventory_report.get('in_stock', [])|length }}
+                </h3>
+              </div>
+            </div>
+            <div class="col-md-3 text-center">
+              <div
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(255, 193, 7, 0.1) 0%,
+                    rgba(255, 152, 0, 0.1) 100%
+                  );
+                  padding: 1.5rem;
+                  border-radius: 12px;
+                  border-left: 4px solid #ffc107;
+                "
+              >
+                <h6
+                  style="
+                    color: #888;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  Low Stock
+                </h6>
+                <h3 style="color: #ffc107; font-size: 2.5rem; margin: 0">
+                  {{ inventory_report.get('low_stock', [])|length }}
+                </h3>
+              </div>
+            </div>
+            <div class="col-md-3 text-center">
+              <div
+                style="
+                  background: linear-gradient(
+                    135deg,
+                    rgba(220, 38, 38, 0.1) 0%,
+                    rgba(239, 68, 68, 0.1) 100%
+                  );
+                  padding: 1.5rem;
+                  border-radius: 12px;
+                  border-left: 4px solid #dc3545;
+                "
+              >
+                <h6
+                  style="
+                    color: #888;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  Critical Items
+                </h6>
+                <h3 style="color: #dc3545; font-size: 2.5rem; margin: 0">
+                  {{ inventory_report.get('critical_items', 0) }}
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Lists -->
+          <div style="border-top: 2px solid #eee; margin: 2rem 0"></div>
+          <div class="row" style="margin-top: 2rem">
+            <!-- Low Stock Items -->
+            {% if inventory_report.get('low_stock') %}
+            <div class="col-md-6 mb-4">
+              <h6 class="text-warning mb-3">
+                ⚠️ Low Stock Items ({{ inventory_report.get('low_stock')|length
+                }})
+              </h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead style="background: #fff3cd">
+                    <tr>
+                      <th>Item</th>
+                      <th>Qty</th>
+                      <th>Reorder Level</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in inventory_report.get('low_stock', [])[:5] %}
+                    <tr>
+                      <td>{{ item.item_name }}</td>
+                      <td>{{ item.quantity }} {{ item.unit }}</td>
+                      <td>{{ item.reorder_level }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Expiring Soon -->
+            {% if inventory_report.get('expiring_soon') %}
+            <div class="col-md-6 mb-4">
+              <h6 class="text-danger mb-3">
+                ⏰ Expiring Soon ({{
+                inventory_report.get('expiring_soon')|length }})
+              </h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead style="background: #f8d7da">
+                    <tr>
+                      <th>Item</th>
+                      <th>Expiry Date</th>
+                      <th>Qty</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in inventory_report.get('expiring_soon', [])[:5]
+                    %}
+                    <tr>
+                      <td>{{ item.item_name }}</td>
+                      <td>{{ item.expiry_date }}</td>
+                      <td>{{ item.quantity }} {{ item.unit }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Expired Items -->
+            {% if inventory_report.get('expired') %}
+            <div class="col-md-6 mb-4">
+              <h6 class="text-danger mb-3">
+                ❌ Expired Items ({{ inventory_report.get('expired')|length }})
+              </h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead style="background: #f5c6cb">
+                    <tr>
+                      <th>Item</th>
+                      <th>Expiry Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in inventory_report.get('expired', [])[:5] %}
+                    <tr>
+                      <td>{{ item.item_name }}</td>
+                      <td>{{ item.expiry_date }}</td>
+                      <td><span class="badge badge-danger">Expired</span></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Options Info -->
+  <div class="row">
+    <div class="col-md-12">
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(59, 130, 246, 0.1) 0%,
+            rgba(59, 130, 246, 0.05) 100%
+          );
+          border: 2px solid rgba(59, 130, 246, 0.3);
+          border-radius: 12px;
+          padding: 1.5rem;
+          border-left: 5px solid #3b82f6;
+        "
+      >
+        <h6 style="margin-bottom: 1rem; font-weight: 600; font-size: 1.1rem">
+          💡 Export Information
+        </h6>
+        <ul style="margin: 0; padding-left: 1.5rem">
+          <li style="margin-bottom: 0.5rem">
+            <strong>CSV Format:</strong> Compatible with Excel, Google Sheets,
+            and other spreadsheet applications
+          </li>
+          <li style="margin-bottom: 0.5rem">
+            <strong>Student/Teacher Records:</strong> Include health data, blood
+            type, allergies, conditions, and vaccination status
+          </li>
+          <li style="margin-bottom: 0.5rem">
+            <strong>Inventory Report:</strong> Shows stock levels, expiry dates,
+            reorder status, and supplier information
+          </li>
+          <li>
+            <strong>Class Reports:</strong> Provides aggregate health statistics
+            for each class
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .export-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(106, 27, 42, 0.3);
+  }
+
+  .table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table tbody tr:hover {
+    background-color: rgba(106, 27, 42, 0.05);
+  }
+</style>
+{% endblock %}

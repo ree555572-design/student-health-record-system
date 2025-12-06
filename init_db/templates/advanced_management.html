@@ -1,0 +1,415 @@
+{% extends "base.html" %} {% block extra_css %}
+<style>
+  .adv-mgmt-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .adv-mgmt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 15px;
+  }
+
+  .adv-mgmt-header h1 {
+    margin: 0;
+    color: #333;
+  }
+
+  .quick-links {
+    display: flex;
+    gap: 10px;
+  }
+
+  .quick-links a {
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s;
+  }
+
+  .quick-links a:hover {
+    background: #0056b3;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .feature-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #007bff;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  .feature-card h3 {
+    margin: 10px 0;
+    color: #333;
+  }
+
+  .feature-card p {
+    color: #666;
+    font-size: 14px;
+    margin: 10px 0;
+  }
+
+  .feature-card .btn {
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+  }
+
+  .feature-card .btn:hover {
+    background: #0056b3;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 30px 0 20px 0;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+
+  .logs-table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .logs-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .logs-table th {
+    background: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+  }
+
+  .logs-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .logs-table tr:hover {
+    background: #f9f9f9;
+  }
+
+  .action-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .action-CREATE {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .action-UPDATE {
+    background: #cce5ff;
+    color: #0056b3;
+  }
+
+  .action-DELETE {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  .action-LOGIN {
+    background: #e2e3e5;
+    color: #383d41;
+  }
+
+  .action-EXPORT {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .action-IMPORT {
+    background: #d1ecf1;
+    color: #0c5460;
+  }
+
+  @media (max-width: 768px) {
+    .feature-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stat-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .adv-mgmt-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .quick-links {
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="adv-mgmt-container">
+  <div class="adv-mgmt-header">
+    <div>
+      <h1>⚙️ Advanced Management</h1>
+      <p style="color: #666; margin-top: 5px">
+        System administration and control panel
+      </p>
+    </div>
+    <div class="quick-links">
+      {% if session.get('role') == 'super_admin' %}
+      <a href="{{ url_for('manage_users') }}">👥 Users</a>
+      {% endif %}
+      <a href="{{ url_for('audit_logs') }}">📋 Audit</a>
+      {% if session.get('role') == 'super_admin' %}
+      <a href="{{ url_for('view_backups') }}">💾 Backups</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Active Users</div>
+      <div class="stat-number">{{ total_users }}</div>
+    </div>
+    <div
+      class="stat-card"
+      style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+    >
+      <div class="stat-label">Recent Audit Logs</div>
+      <div class="stat-number">{{ recent_logs|length }}</div>
+    </div>
+    <div
+      class="stat-card"
+      style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+    >
+      <div class="stat-label">Database Backups</div>
+      <div class="stat-number">{{ backups|length }}</div>
+    </div>
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="feature-grid">
+    {% if session.get('role') == 'super_admin' %}
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>User Management</h3>
+      <p>
+        Manage user roles and permissions. Assign admin levels and control
+        access.
+      </p>
+      <a href="{{ url_for('manage_users') }}" class="btn">Manage Users</a>
+    </div>
+    {% endif %}
+
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <h3>Audit Logging</h3>
+      <p>View all system activities and track who modified what and when.</p>
+      <a href="{{ url_for('audit_logs') }}" class="btn">View Logs</a>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Import/Export</h3>
+      <p>Bulk import/export student and teacher data via CSV files.</p>
+      <a href="{{ url_for('import_export') }}" class="btn">Import/Export</a>
+    </div>
+
+    {% if session.get('role') == 'super_admin' %}
+    <div class="feature-card">
+      <div class="feature-icon">💾</div>
+      <h3>Backup & Restore</h3>
+      <p>
+        Create automated database backups and restore from previous versions.
+      </p>
+      <a href="{{ url_for('view_backups') }}" class="btn">Manage Backups</a>
+    </div>
+    {% endif %}
+
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Access Control</h3>
+      <p>
+        Role-based access control with three admin levels for granular
+        permissions.
+      </p>
+      <button onclick="alert('Configure in User Management')" class="btn">
+        Configure
+      </button>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <h3>System Status</h3>
+      <p>Monitor system health, database size, and backup status.</p>
+      <a href="{{ url_for('view_backups') }}" class="btn">View Status</a>
+    </div>
+  </div>
+
+  <!-- Recent Audit Logs -->
+  <div class="section-title">📊 Recent System Activity</div>
+  <div class="logs-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>User</th>
+          <th>Action</th>
+          <th>Table</th>
+          <th>IP Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if recent_logs %} {% for log in recent_logs[:10] %}
+        <tr>
+          <td>{{ log['timestamp'] }}</td>
+          <td>{{ log['username'] }}</td>
+          <td>
+            <span class="action-badge action-{{ log['action'] }}"
+              >{{ log['action'] }}</span
+            >
+          </td>
+          <td>{{ log['table_name'] }}</td>
+          <td>
+            <code style="font-size: 12px"
+              >{{ log['ip_address'] or 'N/A' }}</code
+            >
+          </td>
+        </tr>
+        {% endfor %} {% else %}
+        <tr>
+          <td colspan="5" style="text-align: center; color: #999">
+            No logs yet
+          </td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- User Roles Reference -->
+  <div class="section-title">🔑 User Roles & Permissions</div>
+  <div
+    style="
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    "
+  >
+    <div style="display: grid; gap: 15px">
+      <div
+        style="
+          padding: 15px;
+          border-left: 4px solid #dc3545;
+          background: #f8d7da;
+        "
+      >
+        <strong>Super Administrator</strong>
+        <p style="margin: 5px 0 0 0; color: #666; font-size: 14px">
+          Full system access. Can manage users, view audit logs, create backups,
+          and perform all operations.
+        </p>
+      </div>
+      <div
+        style="
+          padding: 15px;
+          border-left: 4px solid #28a745;
+          background: #d4edda;
+        "
+      >
+        <strong>Health Officer</strong>
+        <p style="margin: 5px 0 0 0; color: #666; font-size: 14px">
+          Can view and edit health records, import/export data, view audit logs.
+          Cannot manage users or system settings.
+        </p>
+      </div>
+      <div
+        style="
+          padding: 15px;
+          border-left: 4px solid #17a2b8;
+          background: #d1ecf1;
+        "
+      >
+        <strong>Teacher (View Only)</strong>
+        <p style="margin: 5px 0 0 0; color: #666; font-size: 14px">
+          Can only view student health records and class reports. Cannot create
+          or modify any data.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Health Record Management System</title>
+
+    <!-- Boxicons -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Main layout styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+
+    <!-- Flash Message Styles -->
+    <style>
+      .flash-messages {
+        margin: 1rem 0;
+        z-index: 1000;
+      }
+      .flash-message {
+        padding: 1rem 1.5rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        animation: slideIn 0.3s ease-out;
+        transition: opacity 0.3s ease-out;
+      }
+      .flash-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+      }
+      .flash-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+      }
+      .flash-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-left: 4px solid #17a2b8;
+      }
+      .flash-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border-left: 4px solid #ffc107;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- MOBILE MENU TOGGLE BUTTON -->
+      <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="bx bx-menu"></i>
+      </button>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <button class="mobile-menu-close" id="mobileMenuClose">
+            <i class="bx bx-x"></i>
+          </button>
+          <img
+            src="{{ url_for('static', filename='imgs/577258389_819623970710259_5288846695784598957_n-removebg-preview.png') }}"
+            alt="School Logo"
+            class="sidebar-logo"
+          />
+          <div class="sidebar-title">
+            <h1>LYFJSHS</h1>
+            <p>Health Record Management System</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <ul>
+            <li>
+              <a href="{{ url_for('dashboard') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-grid-alt"></i></span>
+                <span class="nav-label">Dashboard</span>
+              </a>
+            </li>
+            {% if session.get('role') in ['super_admin', 'health_officer'] %}
+            <li>
+              <a href="{{ url_for('user_management') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-group"></i></span>
+                <span class="nav-label">User Management</span>
+              </a>
+            </li>
+            {% endif %}
+            <li>
+              <a href="{{ url_for('record_lists') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-list-ul"></i></span>
+                <span class="nav-label">Record Lists</span>
+              </a>
+            </li>
+            {% if session.get('role') in ['super_admin', 'health_officer'] %}
+            <li>
+              <a href="{{ url_for('inventory') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-package"></i></span>
+                <span class="nav-label">Inventory</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ url_for('alerts_dashboard') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-bell"></i></span>
+                <span class="nav-label">Alerts & Notifications</span>
+              </a>
+            </li>
+            {% endif %} {% if session.get('role') in ['super_admin',
+            'health_officer'] %}
+            <li>
+              <a href="{{ url_for('analytics') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-bar-chart"></i></span>
+                <span class="nav-label">Analytics</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ url_for('reports') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-receipt"></i></span>
+                <span class="nav-label">Reports</span>
+              </a>
+            </li>
+            {% endif %} {% if session.get('role') in ['super_admin',
+            'health_officer'] %}
+            <li>
+              <a href="{{ url_for('advanced_management') }}" class="nav-item">
+                <span class="nav-icon"><i class="bx bx-cog"></i></span>
+                <span class="nav-label">Advanced Management</span>
+              </a>
+            </li>
+            {% endif %}
+            <li class="nav-separator"></li>
+            <li>
+              <a href="{{ url_for('logout') }}" class="nav-item nav-logout">
+                <span class="nav-icon"><i class="bx bx-log-out"></i></span>
+                <span class="nav-label">Log Out</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- CONTENT AREA -->
+      <div class="content-area">
+        <!-- USER PROFILE HEADER -->
+        {% if session.get('logged_in') %}
+        <div class="header-profile">
+          <div class="profile-card-header">
+            <div class="profile-avatar-header">
+              <i class="bx bxs-user-circle"></i>
+            </div>
+            <div class="profile-info-header">
+              <h3>
+                {{ current_user.fullname if current_user else
+                session.get('username') }}
+              </h3>
+              <p class="profile-role-header">Administrator</p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- FLASH MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <!-- PAGE CONTENT -->
+        <main class="main-content">{% block content %}{% endblock %}</main>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+        const mobileMenuClose = document.getElementById("mobileMenuClose");
+        const sidebar = document.getElementById("sidebar");
+
+        if (mobileMenuToggle) {
+          mobileMenuToggle.addEventListener("click", function () {
+            sidebar.classList.add("active");
+          });
+        }
+
+        if (mobileMenuClose) {
+          mobileMenuClose.addEventListener("click", function () {
+            sidebar.classList.remove("active");
+          });
+        }
+
+        // Close menu when clicking a nav item
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            sidebar.classList.remove("active");
+          });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (e) {
+          if (
+            !sidebar.contains(e.target) &&
+            !mobileMenuToggle.contains(e.target)
+          ) {
+            sidebar.classList.remove("active");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

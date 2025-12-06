@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Health Record System - Login</title>
+
+    <!-- Boxicons CSS -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <style>
+      .flash-messages {
+        margin: 1rem 0;
+      }
+      .flash-message {
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+      .flash-success {
+        background-color: #d4edda;
+        color: #155724;
+        border-left: 4px solid #28a745;
+      }
+      .flash-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-left: 4px solid #dc3545;
+      }
+      .flash-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-left: 4px solid #17a2b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="glassmorphism-card">
+        <div class="login-header">
+          <h1>LYFJSHS</h1>
+          <h3>Login</h3>
+          <p>Enter your credentials to access your account</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="POST" class="login-form">
+          <div class="form-group">
+            <i class="bx bx-user"></i>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <i class="bx bx-lock-alt"></i>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <p class="signup-text">
+          Don't have an account yet?
+          <a href="{{ url_for('register') }}">Create Account</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

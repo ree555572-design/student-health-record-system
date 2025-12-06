@@ -1,0 +1,274 @@
+/* ===== General Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f5f6fa;
+  color: #333;
+}
+
+/* ===== Container ===== */
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* ===== Main Content ===== */
+.main-content h2 {
+  margin-bottom: 20px;
+  color: #2f3640;
+}
+
+/* ===== Table Styling ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+  background-color: #c1576a;
+  color: #fff;
+}
+
+thead th {
+  padding: 12px;
+  text-align: left;
+  font-weight: normal;
+}
+
+tbody td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+tbody tr:hover {
+  background-color: #f1f2f6;
+}
+
+/* ===== Action Buttons ===== */
+button.btn-small {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  margin-right: 5px;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+button.btn-small {
+  background-color: #a83e51;
+}
+
+button.edit:hover {
+  background-color: #c1576a;
+}
+
+button.delete {
+  background-color: #e84118;
+}
+
+button.delete:hover {
+  background-color: #c23616;
+}
+
+/* ===== Back Button ===== */
+button.btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #a83e51;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button.btn:hover {
+  background-color: #c1576a;
+}
+
+/* ===== Responsive ===== */
+
+/* Tablet (768px to 1024px) */
+@media screen and (max-width: 1024px) {
+  .container {
+    max-width: 95%;
+    margin: 30px auto;
+    padding: 0 15px;
+  }
+
+  .main-content h2 {
+    font-size: 20px;
+    margin-bottom: 18px;
+  }
+
+  table {
+    font-size: 0.95rem;
+  }
+
+  thead th {
+    padding: 10px;
+  }
+
+  tbody td {
+    padding: 10px;
+  }
+
+  button.btn-small {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    margin-right: 3px;
+  }
+
+  button.btn {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Tablets & Large Phones (600px to 767px) */
+@media screen and (max-width: 767px) {
+  .container {
+    max-width: 100%;
+    margin: 20px 0;
+    padding: 0 10px;
+  }
+
+  .main-content h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  table {
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tbody tr {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+    background-color: #fff;
+  }
+
+  tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border-bottom: 1px solid #f1f2f6;
+  }
+
+  tbody td:last-child {
+    border-bottom: none;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    min-width: 100px;
+  }
+
+  button.btn-small {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    margin-right: 4px;
+    margin-top: 4px;
+  }
+
+  button.btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile Phones (320px to 599px) */
+@media screen and (max-width: 599px) {
+  .container {
+    max-width: 100%;
+    margin: 15px 0;
+    padding: 0 8px;
+  }
+
+  .main-content h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  table {
+    font-size: 0.85rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tbody tr {
+    display: block;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 8px;
+    background-color: #fff;
+  }
+
+  tbody td {
+    display: block;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f2f6;
+    text-align: left;
+    word-break: break-word;
+  }
+
+  tbody td:last-child {
+    border-bottom: none;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  button.btn-small {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    margin-right: 3px;
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+
+  button.btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+
+  button.btn:active {
+    background-color: #8b3240;
+  }
+}

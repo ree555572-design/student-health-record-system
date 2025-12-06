@@ -1,0 +1,125 @@
+{% extends "base.html" %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/dashboard.css') }}"
+/>
+{% endblock %} {% block content %}
+
+<!-- Header -->
+<header class="header">
+  <h1 id="page-title">Dashboard</h1>
+</header>
+
+<!-- Main Content Area -->
+<main class="main-content">
+  <!-- Content Area -->
+  <div class="content">
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page active">
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <h3>Total Students</h3>
+            <p id="total-students">{{ total_students }}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-info">
+            <h3>Total Records</h3>
+            <p id="total-records">{{ total_records }}</p>
+          </div>
+        </div>
+      </div>
+
+   <div class="content">
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page active">
+      {% if session.get('role') in ['super_admin', 'health_officer'] %}
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <h3>Total Teachers</h3>
+            <p id="total-students">{{ total_teachers }}</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-info">
+            <h3>Total Records</h3>
+            <p id="total-record">{{ total_teacher_records }}</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+
+      <div class="recent-records">
+        <h2>Recently Added Students</h2>
+        <table id="recent-records-table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>LRN</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Date of Birth</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in recent_students %}
+            <tr>
+              <td>{{ student.id }}</td>
+              <td>{{ student.studentLRN }}</td>
+              <td>
+                <a
+                  >{{ student.name }}</a
+                >
+              </td>
+              <td>{{ student.class }}</td>
+              <td>{{ student.dob }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if session.get('role') in ['super_admin', 'health_officer'] %}
+      <br>
+      <br>
+      <div class="recent-records">
+        <h2>Recently Added Teachers</h2>
+        <table id="recent-teachers-table">
+          <thead>
+            <tr>
+              <th>Teacher ID</th>
+              <th>Teacher Code</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Date of Birth</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for teacher in recent_teachers %}
+            <tr>
+              <td>{{ teacher.id }}</td>
+              <td>{{ teacher.teacherID }}</td>
+              <td>
+                <a
+                  >{{ teacher.name }}</a
+                >
+              </td>
+              <td>{{ teacher.department }}</td>
+              <td>{{ teacher.dob }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+
+    {% endblock %}
+  </div>
+</main>

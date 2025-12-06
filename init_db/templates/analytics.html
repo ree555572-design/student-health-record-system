@@ -1,0 +1,376 @@
+{% extends "base.html" %} {% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<style>
+  .analytics-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .analytics-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 15px;
+  }
+
+  .analytics-header h1 {
+    margin: 0;
+    color: #333;
+  }
+
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+
+  .stat-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-box.blue {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .stat-box.green {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  }
+
+  .stat-box.orange {
+    background: linear-gradient(135deg, #fd7e14 0%, #ff9f1c 100%);
+  }
+
+  .stat-box.red {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  }
+
+  .stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .chart-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+
+  .chart-canvas-wrapper {
+    position: relative;
+    height: 300px;
+    margin-bottom: 10px;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-style: italic;
+  }
+
+  .trends-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+
+  .trends-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+
+  .trend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s;
+  }
+
+  .trend-item:hover {
+    background-color: #f9f9f9;
+  }
+
+  .trend-name {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .trend-count {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .trend-bar {
+    flex: 1;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    margin: 0 15px;
+    overflow: hidden;
+  }
+
+  .trend-bar-fill {
+    height: 100%;
+    background-color: #007bff;
+    transition: width 0.3s;
+    width: 0%;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .export-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+
+  .export-btn:hover {
+    background-color: #20c997;
+  }
+
+  @media (max-width: 768px) {
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .quick-stats {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .chart-canvas-wrapper {
+      height: 250px;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="analytics-container">
+  <div class="analytics-header">
+    <a href="{{ url_for('dashboard') }}" class="back-link"
+      >← Back to Dashboard</a
+    >
+    <h1>📊 Health Analytics & Statistics Dashboard</h1>
+  </div>
+
+  <!-- Quick Stats Section -->
+  <div class="quick-stats">
+    <div class="stat-box blue">
+      <div class="stat-number">{{ summary.total_students }}</div>
+      <div class="stat-label">Total Students</div>
+    </div>
+    <div class="stat-box blue">
+      <div class="stat-number">{{ summary.total_teachers }}</div>
+      <div class="stat-label">Total Teachers</div>
+    </div>
+    <div class="stat-box orange">
+      <div class="stat-number">{{ summary.pending_vaccinations }}</div>
+      <div class="stat-label">Pending Vaccinations</div>
+    </div>
+    <div class="stat-box red">
+      <div class="stat-number">{{ summary.expired_items }}</div>
+      <div class="stat-label">Expired Items</div>
+    </div>
+    <div class="stat-box orange">
+      <div class="stat-number">{{ summary.expiring_soon }}</div>
+      <div class="stat-label">Expiring Soon (30 days)</div>
+    </div>
+    <div class="stat-box green">
+      <div class="stat-number">{{ summary.students_with_allergies }}</div>
+      <div class="stat-label">Students with Allergies</div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-grid">
+    <!-- Blood Type Distribution Chart -->
+    <div class="chart-container">
+      <div class="chart-title">🩸 Blood Type Distribution</div>
+      {% if blood_distribution %}
+      <div class="chart-canvas-wrapper">
+        <canvas id="bloodTypeChart"></canvas>
+      </div>
+      {% else %}
+      <div class="no-data">No blood type data available</div>
+      {% endif %}
+    </div>
+
+    <!-- Vaccination Status Chart -->
+    <div class="chart-container">
+      <div class="chart-title">💉 Vaccination Status Distribution</div>
+      {% if vaccination_status %}
+      <div class="chart-canvas-wrapper">
+        <canvas id="vaccinationChart"></canvas>
+      </div>
+      {% else %}
+      <div class="no-data">No vaccination data available</div>
+      {% endif %}
+    </div>
+
+    <!-- Allergies Chart -->
+    <div class="chart-container">
+      <div class="chart-title">🤧 Top Common Allergies</div>
+      {% if allergies %}
+      <div class="chart-canvas-wrapper">
+        <canvas id="allergiesChart"></canvas>
+      </div>
+      {% else %}
+      <div class="no-data">No allergy data available</div>
+      {% endif %}
+    </div>
+
+    <!-- Past Illnesses Chart -->
+    <div class="chart-container">
+      <div class="chart-title">🤒 Past Illnesses Frequency</div>
+      {% if illnesses %}
+      <div class="chart-canvas-wrapper">
+        <canvas id="illnessesChart"></canvas>
+      </div>
+      {% else %}
+      <div class="no-data">No illness data available</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Health Conditions Trends -->
+  <div class="trends-container">
+    <div class="trends-title">🏥 Pre-Existing Conditions Analysis</div>
+    {% if conditions %}
+    <div>
+      {% set max_count = (conditions.values() | list)[0] if conditions else 1 %}
+      {% for condition, count in conditions.items() %}
+      <div class="trend-item">
+        <div class="trend-name">{{ condition }}</div>
+        <div class="trend-bar">
+          <div
+            class="trend-bar-fill"
+            data-width="{{ (count / max_count * 100) | int }}"
+          ></div>
+        </div>
+        <div class="trend-count">{{ count }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-data">No conditions data available</div>
+    {% endif %}
+  </div>
+
+  <!-- Allergy Trends -->
+  <div class="trends-container">
+    <div class="trends-title">🤧 Common Allergies Breakdown</div>
+    {% if allergies %}
+    <div>
+      {% set max_allergy_count = (allergies.values() | list)[0] if allergies
+      else 1 %} {% for allergy, count in allergies.items() %}
+      <div class="trend-item">
+        <div class="trend-name">{{ allergy }}</div>
+        <div class="trend-bar">
+          <div
+            class="trend-bar-fill"
+            data-width="{{ (count / max_allergy_count * 100) | int }}"
+          ></div>
+        </div>
+        <div class="trend-count">{{ count }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-data">No allergy data available</div>
+    {% endif %}
+  </div>
+
+  <!-- Illnesses Trends -->
+  <div class="trends-container">
+    <div class="trends-title">🤒 Past Illnesses Analysis</div>
+    {% if illnesses %}
+    <div>
+      {% set max_illness_count = (illnesses.values() | list)[0] if illnesses
+      else 1 %} {% for illness, count in illnesses.items() %}
+      <div class="trend-item">
+        <div class="trend-name">{{ illness }}</div>
+        <div class="trend-bar">
+          <div
+            class="trend-bar-fill"
+            data-width="{{ (count / max_illness_count * 100) | int }}"
+          ></div>
+        </div>
+        <div class="trend-count">{{ count }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-data">No illness data available</div>
+    {% endif %}
+  </div>
+</div>
+
+<script type="text/template" id="analytics-data">
+  window.bloodData = {{ blood_distribution | tojson | safe }} || {};
+  window.vaccData = {{ vaccination_status | tojson | safe }} || {};
+  window.allergyData = {{ allergies | tojson | safe }} || {};
+  window.illnessData = {{ illnesses | tojson | safe }} || {};
+</script>
+<script>
+  eval(document.getElementById("analytics-data").textContent);
+</script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+
+{% endblock %}

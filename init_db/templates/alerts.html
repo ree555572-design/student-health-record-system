@@ -1,0 +1,448 @@
+{% extends "base.html" %} {% block extra_css %}
+<style>
+  .alerts-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .alerts-header {
+    margin-bottom: 30px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 15px;
+  }
+
+  .alerts-header h1 {
+    margin: 0;
+    color: #333;
+  }
+
+  .alerts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .alert-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #007bff;
+    transition: transform 0.2s;
+  }
+
+  .alert-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .alert-card.critical {
+    border-left-color: #dc3545;
+  }
+
+  .alert-card.warning {
+    border-left-color: #ffc107;
+  }
+
+  .alert-card.info {
+    border-left-color: #17a2b8;
+  }
+
+  .alert-count {
+    font-size: 32px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+
+  .alert-card.critical .alert-count {
+    color: #dc3545;
+  }
+
+  .alert-card.warning .alert-count {
+    color: #ffc107;
+  }
+
+  .alert-card.info .alert-count {
+    color: #17a2b8;
+  }
+
+  .alert-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .alert-description {
+    font-size: 13px;
+    color: #666;
+    margin-top: 8px;
+  }
+
+  .section {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    display: inline-block;
+    background-color: #dc3545;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .badge.warning {
+    background-color: #ffc107;
+    color: #333;
+  }
+
+  .badge.info {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .badge.success {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .alert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s;
+  }
+
+  .alert-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .alert-item.critical {
+    background-color: #fff5f5;
+    border-left: 4px solid #dc3545;
+  }
+
+  .alert-item.warning {
+    background-color: #fffbf0;
+    border-left: 4px solid #ffc107;
+  }
+
+  .alert-item.info {
+    background-color: #f0f8fb;
+    border-left: 4px solid #17a2b8;
+  }
+
+  .alert-content {
+    flex: 1;
+  }
+
+  .alert-message {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  .alert-detail {
+    font-size: 12px;
+    color: #666;
+  }
+
+  .alert-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 15px;
+  }
+
+  .btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .btn-view {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .btn-view:hover {
+    background-color: #138496;
+  }
+
+  .btn-dismiss {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+  .btn-dismiss:hover {
+    background-color: #d0d0d0;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+  }
+
+  .empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+
+  .emergency-contact-card {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+  }
+
+  .emergency-contact-name {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .emergency-contact-phone {
+    color: #666;
+    font-size: 13px;
+    margin-top: 5px;
+  }
+
+  .emergency-contact-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .alerts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .alert-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .alert-actions {
+      margin-left: 0;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .btn-small {
+      flex: 1;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<div class="alerts-container">
+  <div class="alerts-header">
+    <a href="{{ url_for('dashboard') }}" class="back-link"
+      >← Back to Dashboard</a
+    >
+    <h1>📢 Health Alerts & Notifications</h1>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="alerts-grid">
+    <div class="alert-card critical">
+      <div class="alert-count">{{ expiry_alerts|length }}</div>
+      <p class="alert-title">⏰ Expiry Alerts</p>
+      <p class="alert-description">Inventory items expiring or expired</p>
+    </div>
+
+    <div class="alert-card warning">
+      <div class="alert-count">{{ missing_info|length }}</div>
+      <p class="alert-title">⚠️ Missing Info</p>
+      <p class="alert-description">Incomplete health records</p>
+    </div>
+
+    <div class="alert-card info">
+      <div class="alert-count">{{ vaccination_reminders|length }}</div>
+      <p class="alert-title">💉 Vaccination Updates</p>
+      <p class="alert-description">Pending vaccination schedules</p>
+    </div>
+
+    <div class="alert-card info">
+      <div class="alert-count">{{ emergency_contacts|length }}</div>
+      <p class="alert-title">🚨 Emergency Contacts</p>
+      <p class="alert-description">Quick access to contacts</p>
+    </div>
+  </div>
+
+  <!-- Expiry Alerts Section -->
+  <div class="section">
+    <div class="section-title">
+      ⏰ Inventory Expiry Alerts
+      <span class="badge critical">{{ expiry_alerts|length }}</span>
+    </div>
+    {% if expiry_alerts|length > 0 %} {% for alert in expiry_alerts %}
+    <div
+      class="alert-item {% if alert.severity == 'critical' %}critical{% else %}warning{% endif %}"
+    >
+      <div class="alert-content">
+        <div class="alert-message">📦 {{ alert.message }}</div>
+        <div class="alert-detail">
+          Expiry Date: <strong>{{ alert.expiry_date }}</strong>
+        </div>
+      </div>
+      <div class="alert-actions">
+        <button
+          class="btn-small btn-view"
+          onclick="editInventory('{{ alert.item_id }}')"
+        >
+          View
+        </button>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">✓</div>
+      <p>No expiry alerts. All inventory items are in good condition!</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Missing Information Section -->
+  <div class="section">
+    <div class="section-title">
+      ⚠️ Missing Health Information
+      <span class="badge warning">{{ missing_info|length }}</span>
+    </div>
+    {% if missing_info|length > 0 %} {% for alert in missing_info %}
+    <div class="alert-item warning">
+      <div class="alert-content">
+        <div class="alert-message">👤 {{ alert.message }}</div>
+        <div class="alert-detail">
+          Missing Field: <strong>{{ alert.field }}</strong> | Type:
+          <strong>{{ alert.person_type|capitalize }}</strong>
+        </div>
+      </div>
+      <div class="alert-actions">
+        {% if alert.person_type == 'student' %}
+        <button class="btn-small btn-view">View Record</button>
+        {% else %}
+        <button class="btn-small btn-view">View Record</button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">✓</div>
+      <p>All health records are complete!</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Vaccination Reminders Section -->
+  <div class="section">
+    <div class="section-title">
+      💉 Vaccination Status Updates
+      <span class="badge info">{{ vaccination_reminders|length }}</span>
+    </div>
+    {% if vaccination_reminders|length > 0 %} {% for reminder in
+    vaccination_reminders %}
+    <div class="alert-item info">
+      <div class="alert-content">
+        <div class="alert-message">💉 {{ reminder.message }}</div>
+        <div class="alert-detail">
+          Current Status: <strong>{{ reminder.vaccination_status }}</strong> |
+          Type:
+          <strong>{{ reminder.person_type|capitalize }}</strong>
+        </div>
+      </div>
+      <div class="alert-actions">
+        <button class="btn-small btn-view">View Record</button>
+      </div>
+    </div>
+    {% endfor %} {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">✓</div>
+      <p>No pending vaccination updates.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Emergency Contacts Section -->
+  <div class="section">
+    <div class="section-title">
+      🚨 Emergency Contacts - Quick Access
+      <span class="badge success">{{ emergency_contacts|length }}</span>
+    </div>
+    {% if emergency_contacts|length > 0 %}
+    <div style="columns: 2; column-gap: 20px">
+      {% for contact in emergency_contacts %}
+      <div class="emergency-contact-card">
+        <div class="emergency-contact-name">
+          {% if contact.type == 'student' %}📚 {{ contact.name }}{% else %}👨‍🏫 {{
+          contact.name }}{% endif %}
+        </div>
+        <div class="emergency-contact-phone">
+          📞 {{ contact.emergency_contact or contact.parent_contact or 'N/A' }}
+        </div>
+        <div class="emergency-contact-info">
+          {% if contact.type == 'student' %} Class: {{ contact.info }} {% else
+          %} Department: {{ contact.info }} {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <p>No emergency contacts on file.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function editInventory(id) {
+    // Redirect to edit inventory page or open modal
+    window.location.href = `/edit_medicine/${id}`;
+  }
+</script>
+
+{% endblock %}

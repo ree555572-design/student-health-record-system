@@ -1,0 +1,605 @@
+{% extends "base.html" %} {% block content %}
+<div class="container-fluid py-5">
+  <!-- Header with Back Button -->
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <a
+        href="/reports"
+        style="
+          display: inline-block;
+          padding: 0.5rem 1rem;
+          background: rgba(106, 27, 42, 0.1);
+          border: 2px solid #6a1b2a;
+          border-radius: 8px;
+          color: #6a1b2a;
+          text-decoration: none;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          transition: all 0.3s ease;
+        "
+        onmouseover="this.style.background='#6a1b2a'; this.style.color='white';"
+        onmouseout="this.style.background='rgba(106, 27, 42, 0.1)'; this.style.color='#6a1b2a';"
+      >
+        <i class="bx bx-arrow-back"></i> Back to Reports
+      </a>
+      <div>
+        <h1
+          style="
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #6a1b2a;
+            margin-bottom: 0.5rem;
+          "
+        >
+          📋 Class Health Report
+        </h1>
+        <p style="color: #888; margin: 0; font-size: 1.1rem">
+          {{ report.class_name }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Statistics -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(106, 27, 42, 0.1) 0%,
+            rgba(139, 35, 64, 0.1) 100%
+          );
+          border: 2px solid #6a1b2a;
+          border-radius: 12px;
+          padding: 1.5rem;
+          text-align: center;
+        "
+      >
+        <h6
+          style="
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+          "
+        >
+          Total Students
+        </h6>
+        <h3 style="color: #6a1b2a; font-size: 2.5rem; margin: 0">
+          {{ report.total_students }}
+        </h3>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(230, 126, 34, 0.1) 0%,
+            rgba(244, 96, 54, 0.1) 100%
+          );
+          border: 2px solid #e67e22;
+          border-radius: 12px;
+          padding: 1.5rem;
+          text-align: center;
+        "
+      >
+        <h6
+          style="
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+          "
+        >
+          With Allergies
+        </h6>
+        <h3 style="color: #e67e22; font-size: 2.5rem; margin: 0">
+          {{ report.students_with_allergies }}
+        </h3>
+        <small style="color: #888">
+          ({{ ((report.students_with_allergies / report.total_students * 100) if
+          report.total_students > 0 else 0)|round(1) }}%)
+        </small>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(39, 174, 96, 0.1) 0%,
+            rgba(46, 204, 113, 0.1) 100%
+          );
+          border: 2px solid #27ae60;
+          border-radius: 12px;
+          padding: 1.5rem;
+          text-align: center;
+        "
+      >
+        <h6
+          style="
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+          "
+        >
+          With Conditions
+        </h6>
+        <h3 style="color: #27ae60; font-size: 2.5rem; margin: 0">
+          {{ report.students_with_conditions }}
+        </h3>
+        <small style="color: #888">
+          ({{ ((report.students_with_conditions / report.total_students * 100)
+          if report.total_students > 0 else 0)|round(1) }}%)
+        </small>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(52, 152, 219, 0.1) 0%,
+            rgba(41, 128, 185, 0.1) 100%
+          );
+          border: 2px solid #3498db;
+          border-radius: 12px;
+          padding: 1.5rem;
+          text-align: center;
+        "
+      >
+        <h6
+          style="
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+          "
+        >
+          Vaccination Categories
+        </h6>
+        <h3 style="color: #3498db; font-size: 2.5rem; margin: 0">
+          {{ report.vaccination_statuses|length }}
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Two-Column Layout for Charts -->
+  <div class="row mb-4">
+    <!-- Blood Type Distribution -->
+    <div class="col-md-6 mb-4">
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.8);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 16px;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        "
+      >
+        <div
+          style="
+            background: linear-gradient(135deg, #6a1b2a 0%, #8b2340 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 14px 14px 0 0;
+          "
+        >
+          <h6 style="margin: 0; font-size: 1.1rem; font-weight: 600">
+            🩸 Blood Type Distribution
+          </h6>
+        </div>
+        <div style="padding: 2rem">
+          <div style="position: relative; height: 250px">
+            <canvas id="bloodTypeChart"></canvas>
+          </div>
+          <div style="margin-top: 1.5rem">
+            <table style="width: 100%; border-collapse: collapse">
+              <tbody>
+                {% for blood_type, count in report.blood_types.items() %}
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 0.75rem 0">{{ blood_type }}</td>
+                  <td
+                    style="
+                      padding: 0.75rem 0;
+                      text-align: right;
+                      color: #6a1b2a;
+                      font-weight: 600;
+                    "
+                  >
+                    {{ count }} students
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vaccination Status -->
+    <div class="col-md-6 mb-4">
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.8);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 16px;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        "
+      >
+        <div
+          style="
+            background: linear-gradient(135deg, #6a1b2a 0%, #8b2340 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 14px 14px 0 0;
+          "
+        >
+          <h6 style="margin: 0; font-size: 1.1rem; font-weight: 600">
+            💉 Vaccination Status Breakdown
+          </h6>
+        </div>
+        <div style="padding: 2rem">
+          <div style="position: relative; height: 250px">
+            <canvas id="vaccinationChart"></canvas>
+          </div>
+          <div style="margin-top: 1.5rem">
+            <table style="width: 100%; border-collapse: collapse">
+              <tbody>
+                {% for status, count in report.vaccination_statuses.items() %}
+                <tr style="border-bottom: 1px solid #eee">
+                  <td style="padding: 0.75rem 0">{{ status }}</td>
+                  <td
+                    style="
+                      padding: 0.75rem 0;
+                      text-align: right;
+                      color: #6a1b2a;
+                      font-weight: 600;
+                    "
+                  >
+                    {{ count }} students
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student List -->
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <div
+        style="
+          background: rgba(255, 255, 255, 0.8);
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 16px;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        "
+      >
+        <div
+          style="
+            background: linear-gradient(135deg, #6a1b2a 0%, #8b2340 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 14px 14px 0 0;
+          "
+        >
+          <h6 style="margin: 0; font-size: 1.1rem; font-weight: 600">
+            👥 Student Details ({{ report.students|length }})
+          </h6>
+        </div>
+        <div style="padding: 2rem">
+          <div class="table-responsive">
+            <table style="width: 100%; border-collapse: collapse">
+              <thead>
+                <tr
+                  style="
+                    background: rgba(106, 27, 42, 0.05);
+                    border-bottom: 2px solid #e0e0e0;
+                  "
+                >
+                  <th
+                    style="
+                      padding: 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #6a1b2a;
+                    "
+                  >
+                    LRN
+                  </th>
+                  <th
+                    style="
+                      padding: 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #6a1b2a;
+                    "
+                  >
+                    Name
+                  </th>
+                  <th
+                    style="
+                      padding: 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #6a1b2a;
+                    "
+                  >
+                    Blood Type
+                  </th>
+                  <th
+                    style="
+                      padding: 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #6a1b2a;
+                    "
+                  >
+                    Allergies
+                  </th>
+                  <th
+                    style="
+                      padding: 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #6a1b2a;
+                    "
+                  >
+                    Conditions
+                  </th>
+                  <th
+                    style="
+                      padding: 1rem;
+                      text-align: left;
+                      font-weight: 600;
+                      color: #6a1b2a;
+                    "
+                  >
+                    Vaccination
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for student in report.students %}
+                <tr
+                  style="
+                    border-bottom: 1px solid #eee;
+                    transition: background 0.3s ease;
+                  "
+                  onmouseover="this.style.background='rgba(106, 27, 42, 0.03)';"
+                  onmouseout="this.style.background='transparent';"
+                >
+                  <td style="padding: 1rem">
+                    <strong>{{ student.studentLRN }}</strong>
+                  </td>
+                  <td style="padding: 1rem">{{ student.name }}</td>
+                  <td style="padding: 1rem">
+                    {% if student.blood %}
+                    <span
+                      style="
+                        display: inline-block;
+                        background: rgba(52, 152, 219, 0.2);
+                        color: #3498db;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 20px;
+                        font-size: 0.85rem;
+                        font-weight: 600;
+                      "
+                      >{{ student.blood }}</span
+                    >
+                    {% else %}
+                    <span style="color: #999">N/A</span>
+                    {% endif %}
+                  </td>
+                  <td style="padding: 1rem; font-size: 0.9rem; color: #666">
+                    {% if student.allergies %} {{ student.allergies[:30] }}{% if
+                    student.allergies|length > 30 %}...{% endif %} {% else %}
+                    <span style="color: #999">-</span>
+                    {% endif %}
+                  </td>
+                  <td style="padding: 1rem; font-size: 0.9rem; color: #666">
+                    {% if student.conditions %} {{ student.conditions[:30] }}{%
+                    if student.conditions|length > 30 %}...{% endif %} {% else
+                    %}
+                    <span style="color: #999">-</span>
+                    {% endif %}
+                  </td>
+                  <td style="padding: 1rem">
+                    {% if student.vaccination %}
+                    <span
+                      style="
+                        display: inline-block;
+                        background: rgba(39, 174, 96, 0.2);
+                        color: #27ae60;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 20px;
+                        font-size: 0.85rem;
+                        font-weight: 600;
+                      "
+                      >{{ student.vaccination }}</span
+                    >
+                    {% else %}
+                    <span
+                      style="
+                        display: inline-block;
+                        background: rgba(255, 193, 7, 0.2);
+                        color: #ffc107;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 20px;
+                        font-size: 0.85rem;
+                        font-weight: 600;
+                      "
+                      >Pending</span
+                    >
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Option -->
+  <div class="row">
+    <div class="col-md-12">
+      <div
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(59, 130, 246, 0.1) 0%,
+            rgba(59, 130, 246, 0.05) 100%
+          );
+          border: 2px solid rgba(59, 130, 246, 0.3);
+          border-radius: 12px;
+          padding: 1.5rem;
+          border-left: 5px solid #3b82f6;
+        "
+      >
+        <h6 style="margin-bottom: 1rem; font-weight: 600; font-size: 1.1rem">
+          📥 Export Report
+        </h6>
+        <p style="margin-bottom: 1rem; color: #666">
+          Export this class health report for records or further analysis:
+        </p>
+        <a
+          href="/export/students/csv"
+          style="
+            display: inline-block;
+            background: linear-gradient(135deg, #6a1b2a 0%, #8b2340 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+          "
+          onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.2)';"
+          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
+        >
+          <i class="bx bxs-file-csv"></i> Export Student Records (CSV)
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Blood Type Chart
+    const bloodTypeCtx = document.getElementById("bloodTypeChart");
+    if (bloodTypeCtx) {
+      const bloodTypeData = JSON.parse("{{ report.blood_types|tojson|safe }}");
+      const bloodLabels = Object.keys(bloodTypeData);
+      const bloodValues = Object.values(bloodTypeData);
+
+      new Chart(bloodTypeCtx, {
+        type: "doughnut",
+        data: {
+          labels: bloodLabels.length > 0 ? bloodLabels : ["No Data"],
+          datasets: [
+            {
+              data: bloodValues.length > 0 ? bloodValues : [0],
+              backgroundColor: [
+                "#FF6B6B",
+                "#4ECDC4",
+                "#45B7D1",
+                "#FFA07A",
+                "#98D8C8",
+                "#F7DC6F",
+                "#BB8FCE",
+                "#85C1E2",
+              ],
+              borderColor: "white",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                padding: 15,
+                font: { size: 12 },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    // Vaccination Status Chart
+    const vaccinationCtx = document.getElementById("vaccinationChart");
+    if (vaccinationCtx) {
+      const vaccinationData = JSON.parse(
+        "{{ report.vaccination_statuses|tojson|safe }}"
+      );
+      const vaccLabels = Object.keys(vaccinationData);
+      const vaccValues = Object.values(vaccinationData);
+
+      new Chart(vaccinationCtx, {
+        type: "pie",
+        data: {
+          labels: vaccLabels.length > 0 ? vaccLabels : ["No Data"],
+          datasets: [
+            {
+              data: vaccValues.length > 0 ? vaccValues : [0],
+              backgroundColor: [
+                "#6a1b2a",
+                "#8b2340",
+                "#e67e22",
+                "#27ae60",
+                "#3498db",
+                "#9b59b6",
+                "#e74c3c",
+                "#2ecc71",
+              ],
+              borderColor: "white",
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                padding: 15,
+                font: { size: 12 },
+              },
+            },
+          },
+        },
+      });
+    }
+  });
+</script>
+{% endblock %}
